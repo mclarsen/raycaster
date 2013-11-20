@@ -55,9 +55,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	private JFrame thisJFrame=this;
 	private static GLU glu;
 	private double moveSpeed=.001; // how fast camera moves per keystroke
-	private double panSpeed=.2;
+	private double panSpeed=.3;
 	private double aspect;
-
+	
 	private final static boolean OPENGL_DEBUG_MODE=true; // if true then debuggin output is on
 	public static final int TICK_LENGTH=10; 			 // tick length in milliseconds
 	private Timer timer;     							 // game timer
@@ -95,6 +95,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     Grid grid;
     ParticleSystem ps;
     LightSphere theLight;
+    BoundingBox theBox;
     
     //lights
     private PositionalLight light1= new PositionalLight();
@@ -122,6 +123,11 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     
     // Shader Programs
     private ShaderProgram identityShader;
+    
+    
+    //******************Volume Rendering Vars******************************
+    public static int[] backFaceTextureID= new int[1];
+    private int[] backFaceFrameBuff= new int [1];
     
     
 	/**
@@ -265,6 +271,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	
 			grid.draw(arg0);										//Draw axis grid if enable
 		}
+		theBox.draw(arg0);
 		theLight.draw(arg0);
 		ps.draw(gl, myCamera.getLocation(), myCamera.getUpAxis());
 		
@@ -311,6 +318,10 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		 */
 		grid= new Grid(18, gl3);
 		grid.scale(2, 2, 2);
+		theBox= new BoundingBox(gl3);
+		theBox.translate(0, 0, -5);
+		theBox.scale(1, 1, 10);
+		theBox.renderFrontFace(false);
 		
 		theLight= new LightSphere(gl3, new Point3D(0,0,0), 20, .1, Color.YELLOW);
 		
@@ -321,6 +332,38 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		errorCheck(gl3,"end init");							//check for errors
 		
 		initLights(gl3);
+		
+		
+		//Create Framebuffer to store the coordinates of the back face of the volume
+		//inside of a texture
+		//----------------------------------------------------------------------------
+		//generate the framebuffer and the texture that will be rendered to.
+		gl3.glGenTextures (1, backFaceTextureID,0);
+		gl3.glGenFramebuffers (1, backFaceFrameBuff,0);
+		
+		int frameBuffID= backFaceFrameBuff[0];
+		int backFaceTextID= backFaceTextureID[0];
+		
+		//bind them so we can set them up
+		gl3.glBindFramebuffer (GL3.GL_FRAMEBUFFER, frameBuffID);
+		gl3.glBindTexture (GL3.GL_TEXTURE_2D, backFaceTextID);
+		
+		//texture settings
+		gl3.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA16F, currentWidth, currentHeight, 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
+		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
+		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
+		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_BORDER);
+		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_BORDER);
+		//tell the framebuffer to render to the backface texture and do colors (other options are rending the depth buffer for shadows)
+		gl3.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT1, GL3.GL_TEXTURE_2D, backFaceTextID, 0);
+		
+		//check the status of the frame buff
+		int frameCode=gl3.glCheckFramebufferStatus (GL3.GL_FRAMEBUFFER);
+		if (frameCode!=GL3.GL_FRAMEBUFFER_COMPLETE) {
+			System.out.println("ERROR creating frame buffer");
+		}
+		//unbind the framebuffer
+		gl3.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
 	}
 	
 	
