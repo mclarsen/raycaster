@@ -38,6 +38,7 @@ import javax.swing.border.TitledBorder;
 
 
 
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
@@ -349,18 +350,32 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl3.glBindTexture (GL3.GL_TEXTURE_2D, backFaceTextID);
 		
 		//texture settings
-		gl3.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA16F, currentWidth, currentHeight, 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
+		
 		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
 		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_BORDER);
-		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_BORDER);
+		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
+		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
+		
+		
+		gl3.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA16F, myCanvas.getWidth(), myCanvas.getWidth(), 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
+		//gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
+		
 		//tell the framebuffer to render to the backface texture and do colors (other options are rending the depth buffer for shadows)
-		gl3.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT1, GL3.GL_TEXTURE_2D, backFaceTextID, 0);
+		gl3.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D, backFaceTextID, 0);
 		
 		//check the status of the frame buff
 		int frameCode=gl3.glCheckFramebufferStatus (GL3.GL_FRAMEBUFFER);
 		if (frameCode!=GL3.GL_FRAMEBUFFER_COMPLETE) {
 			System.out.println("ERROR creating frame buffer");
+			if(frameCode==GL3.GL_FRAMEBUFFER_UNDEFINED) System.out.println("Undefined");
+			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT ) System.out.println("Incomplete Attachment");
+			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT ) System.out.println("No Attatchmemt");
+			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER ) System.out.println("Incomplete Draw Buffer");
+			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER ) System.out.println("Incomplete ReadBuffer");
+			if(frameCode==GL3.GL_FRAMEBUFFER_UNSUPPORTED ) System.out.println("Not supported");
+			//if(frameCode==GL3.GL_FRAMEBUFFER_UNDEFINED) System.out.println("Undefined");
+			
+			
 		}
 		//unbind the framebuffer
 		gl3.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
@@ -740,6 +755,13 @@ private void installLighting(GL3 gl){
 	
 	}
 	
+	private void renderBack(GL3 gl){
+		gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D, backFaceFrameBuff[0], 0);
+		gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT );
+		//draw
+	}
+
+
 	/**
 	 * Check openGL error stack for errors at a location specified by the string passed.
 	 * Static so it is available to all.
