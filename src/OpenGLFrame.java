@@ -37,6 +37,7 @@ import javax.swing.border.TitledBorder;
 
 
 
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
@@ -103,7 +104,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	private boolean light1On=true;
     private LightAttributesLocs light1Locs;
   //value of global ambient light
-    private Vector3D globalAmbientLight= new Vector3D(.2f,.2f,.2f,1); 
+    private Vector3D globalAmbientLight= new Vector3D(.9f,.9f,.9f,1); 
     
     //movement flags
     boolean onDown=false;
@@ -129,7 +130,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	 */
 	public OpenGLFrame(){
 		
-		glu= new GLU();                                        // GLU Object for Error reporting
+		glu= new GLU();    // GLU Object for Error reporting
 		JPanel top= new JPanel();			 
 		this.add(top);
 		timer= new Timer(TICK_LENGTH, this);                   // Animation Timer
@@ -214,7 +215,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	 */
 	@Override
 	public void display(GLAutoDrawable arg0) {
-		
+		//System.out.println(light1Locs.getGlobalAmientLoc());
 		/*
 		 * Movement flags
 		 */
@@ -284,6 +285,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		/*
 		 *  geometry pipeline code setup
 		 */
+		//System.out.println("GL Version : " +gl3.glGetString(GL3.GL_VERSION));
+		
 		modelViewMat.loadIdentity();
 		GeometryTransformPipeline.setModelViewMatrixStack(modelViewMat);
 		GeometryTransformPipeline.setProjectionMatrixStack(projMat);
@@ -312,7 +315,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		theLight= new LightSphere(gl3, new Point3D(0,0,0), 20, .1, Color.YELLOW);
 		
 		//RandomTexture test= new RandomTexture(64, gl3);
-		ps=new ParticleSystem(arg0, createTexture(gl3, "two.jpg", true), 1000);
+		ps=new ParticleSystem(arg0, createTexture(gl3, "two.jpg", true), 10000);
 		ps.scale(100, 100, 100);
 		
 		errorCheck(gl3,"end init");							//check for errors

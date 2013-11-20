@@ -18,7 +18,8 @@ struct Material{
 
 
 uniform sampler2D colorMap;
-uniform PositionalLight light;                                                        
+uniform PositionalLight light;  
+uniform vec4 globalAmbient;                                                      
 in vec2 TexCoord;  
 in vec3 normal; 
 in vec3 lightDir; //in eye-space
@@ -29,7 +30,7 @@ out vec4 fragColor;
 
 void main()                                                                         
 {      
-	vec4 globalAmbient=vec4(.2,.2,.2,1); 
+	
 
 	vec3 textColor=vec3(texture2D(colorMap, TexCoord.st)); 
 	vec4 color;

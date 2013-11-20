@@ -117,8 +117,8 @@ public class ParticleSystem extends Shape3D {
 		gl.glUseProgram(update.getProgramID());
 		//set time locs
 	    float t=(float)this.getDeltaMilli();
-	    System.out.println("Delta= "+t);
-	    System.out.println("Now= "+(float)currentTime);
+	    //System.out.println("Delta= "+t);
+	    //System.out.println("Now= "+(float)currentTime);
 		gl.glUniform1f(updateLocs.getTimePassedLoc(), t);
 		gl.glUniform1f(updateLocs.getTimeLoc(), (float)currentTime);
 		OpenGLFrame.errorCheck(gl,"before random bind");
