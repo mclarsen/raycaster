@@ -14,12 +14,12 @@ import javax.media.opengl.GLAutoDrawable;
 
 public class BoundingBox extends Shape3D{
 	
-	private float [] verts={.5f,.5f,.5f,    -.5f,.5f,.5f,    -.5f,-.5f,.5f,       .5f,.5f,.5f,    -.5f,-.5f,.5f,     .5f, -.5f,.5f,  // front face
-						    .5f,.5f,-.5f,   -.5f,.5f,-.5f,    -.5f,.5f,.5f,        .5f,.5f,-.5f,    -.5f,.5f,.5f,      .5f,.5f,.5f,  //top face
-						    .5f,-.5f,-.5f,  -.5f,-.5f,-.5f,   -.5f,.5f,-.5f,      .5f,-.5f,-.5f,    -.5f,.5f,-.5f,    .5f,.5f,-.5f, // back face
-						    .5f,-.5f,.5f,   -.5f,-.5f,.5f,   -.5f,-.5f,-.5f,      .5f,-.5f,.5f,   -.5f,-.5f,-.5f,     .5f,-.5f,-.5f,// bottom face
-						    .5f,.5f,-.5f,   .5f,.5f,.5f,     .5f,-.5f,.5f,        .5f,.5f,-.5f,    .5f,-.5f,.5f,      .5f,-.5f,-.5f,  //right face
-						    -.5f,.5f,.5f,   -.5f,.5f,-.5f,   -.5f,-.5f,-.5f,      -.5f,.5f,.5f,   -.5f,-.5f,-.5f,     -.5f,-.5f,.5f};
+	private float [] verts={1.0f,1.0f,1.0f,    -1.0f,1.0f,1.0f,    -1.0f,-1.0f,1.0f,       1.0f,1.0f,1.0f,    -1.0f,-1.0f,1.0f,     1.0f, -1.0f,1.0f,  // front face
+						    1.0f,1.0f,-1.0f,   -1.0f,1.0f,-1.0f,    -1.0f,1.0f,1.0f,        1.0f,1.0f,-1.0f,    -1.0f,1.0f,1.0f,      1.0f,1.0f,1.0f,  //top face
+						    1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,   -1.0f,1.0f,-1.0f,      1.0f,-1.0f,-1.0f,    -1.0f,1.0f,-1.0f,    1.0f,1.0f,-1.0f, // back face
+						    1.0f,-1.0f,1.0f,   -1.0f,-1.0f,1.0f,   -1.0f,-1.0f,-1.0f,      1.0f,-1.0f,1.0f,   -1.0f,-1.0f,-1.0f,     1.0f,-1.0f,-1.0f,// bottom face
+						    1.0f,1.0f,-1.0f,   1.0f,1.0f,1.0f,     1.0f,-1.0f,1.0f,        1.0f,1.0f,-1.0f,    1.0f,-1.0f,1.0f,      1.0f,-1.0f,-1.0f,  //right face
+						    -1.0f,1.0f,1.0f,   -1.0f,1.0f,-1.0f,   -1.0f,-1.0f,-1.0f,      -1.0f,1.0f,1.0f,   -1.0f,-1.0f,-1.0f,     -1.0f,-1.0f,1.0f};
 	
 	
 	private float [] normals={0,0, 1,  0,0, 1,  0,0, 1,   0,0, 1,  0,0, 1,  0,0, 1, //front
@@ -31,12 +31,12 @@ public class BoundingBox extends Shape3D{
 	
 	
 	
-	private float [] colors={ 1,1,1,1,  1,1,1,1,   1,1,1,1,    1,1,1,1,    1,1,1,1,    1,1,1,1,//front
-							  1,0,1,1,  1,0,1,1,   1,0,1,1,    1,0,1,1,    1,0,1,1,    1,0,1,1,//top
-							  0,1,1,1,  0,1,1,1,   0,1,1,1,    0,1,1,1,    0,1,1,1,    0,1,1,1,//back
-							  1,1,0,1,  1,1,0,1,   1,1,0,1,    1,1,0,1,    1,1,0,1,    1,1,0,1,//bottom
-							  1,1,1,1,  1,1,1,1,   1,1,1,1,    1,1,1,1,    1,1,1,1,    1,1,1,1,//right
-							  0,0,1,1,  0,0,1,1,   0,0,1,1,    0,0,1,1,    0,0,1,1,    0,0,1,1};//left
+	private float [] colors={1.0f,1.0f,1.0f,1.0f,    0f,1.0f,1.0f,1.0f,    	0f,0f,1.0f,1.0f,       	1.0f,1.0f,1.0f,1.0f,    0f,0f,1.0f,1.0f,     	1.0f, 0f,1.0f,1.0f,  // front face
+						    1.0f,1.0f,0f,1.0f,   	0f,1.0f,0f,1.0f,    	0f,1.0f,1.0f,1.0f,      1.0f,1.0f,0f,1.0f,    	0f,1.0f,1.0f,1.0f,      1.0f,1.0f,1.0f,1.0f,  //top face
+						    1.0f,0f,0f,1.0f,  		0f,0f,0f,1.0f,   		0f,1.0f,0f,1.0f,     	1.0f,0f,0f,1.0f,    	0f,1.0f,0f,1.0f,    	1.0f,1.0f,0f,1.0f, // back face
+						    1.0f,0f,1.0f,1.0f,   	0f,0f,1.0f,1.0f,   		0f,0f,0f,1.0f,      	1.0f,0f,1.0f,1.0f,   	0f,0f,0f,1.0f,     		1.0f,0f,0f,1.0f,// bottom face
+						    1.0f,1.0f,0f,1.0f,   	1.0f,1.0f,1.0f,1.0f,    1.0f,0f,1.0f,1.0f,      1.0f,1.0f,0f,1.0f,    	1.0f,0f,1.0f,1.0f,      1.0f,0f,0f,1.0f,  //right face
+						    0f,1.0f,1.0f,1.0f,   	0f,1.0f,0f,1.0f,   		0f,0f,0f,1.0f,      	0f,1.0f,1.0f,1.0f,  	0f,0f,0f,1.0f,     		0f,0f,1.0f,1.0f};
 	private int[] vaoID= new int[1];// vertex array object ID
 
 	private float[] textCoords={1f,1f,        0f,1f,     0f,0f,    1f,1f,   0f,0f,  1f,0f,

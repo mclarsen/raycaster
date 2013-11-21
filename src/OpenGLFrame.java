@@ -15,7 +15,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -34,6 +36,8 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
+
+
 
 
 
@@ -129,7 +133,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     //******************Volume Rendering Vars******************************
     public static int[] backFaceTextureID= new int[1];
     private int[] backFaceFrameBuff= new int [1];
-    
+    public static int[] volumeTextureID= new int[1];
+    private boolean doOnce=true;  //FIND ME and remove
     
 	/**
 	 * Default constructor
@@ -241,8 +246,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		myCamera.tick(); 													//calculate movement based on momentum
 		
 		GL3 gl=(GL3) arg0.getGL();
-		gl.glEnable(GL3.GL_BLEND);											//enable alpha blending
-		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);		//set blend function
+		//gl.glEnable(GL3.GL_BLEND);											//enable alpha blending
+		//gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);		//set blend function
 		gl.glClear(GL3.GL_COLOR_BUFFER_BIT|GL3.GL_DEPTH_BUFFER_BIT); 		// clear color and depth buffer
 	
 		/*
@@ -257,6 +262,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		installLighting(gl);
 		gl.glUseProgram(identityShader.getProgramID());
+		
+		//********************Render the backface to the framebuffer texture***********************************
+
 		//System.out.println("Proj: " + proj);
 		ps.setProjectionMatrix(proj);
 		double[]  projVals= proj.getValues();									//get projection matrix
@@ -264,6 +272,18 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		for(int i=0; i<projVals.length;i++)projValsf[i]=(float) projVals[i];	//convert to floats
 		gl.glUniformMatrix4fv(IdentityLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to shader
 		
+		//render to the buffer
+		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
+		gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D, backFaceTextureID[0], 0);
+		gl.glClear(GL3.GL_COLOR_BUFFER_BIT|GL3.GL_DEPTH_BUFFER_BIT); 			// clear color and depth buffer
+		theBox.renderFrontFace(false);
+		theBox.draw(arg0);
+		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);							//undbind the renderbuffer
+		
+		// Now lets do some casting
+		//*****************************************************************************************************
+		
+		theBox.draw(arg0);
 		if (wireFrameOn) gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE);  //enable wirefram if set
 		else gl.glPolygonMode( GL3.GL_FRONT_AND_BACK, GL3.GL_FILL );
 		
@@ -272,8 +292,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	
 			grid.draw(arg0);										//Draw axis grid if enable
 		}
-		theBox.draw(arg0);
-		theLight.draw(arg0);
+		
+		//theLight.draw(arg0);
 		ps.draw(gl, myCamera.getLocation(), myCamera.getUpAxis());
 		
 		errorCheck(gl,"display");												//check for errors in display
@@ -320,8 +340,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		grid= new Grid(18, gl3);
 		grid.scale(2, 2, 2);
 		theBox= new BoundingBox(gl3);
-		theBox.translate(0, 0, -5);
-		theBox.scale(1, 1, 10);
+		theBox.translate(1, 0, 0);
+		//theBox.scale(1, 1, 10);
 		theBox.renderFrontFace(false);
 		
 		theLight= new LightSphere(gl3, new Point3D(0,0,0), 20, .1, Color.YELLOW);
@@ -356,8 +376,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
 		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
 		
-		
-		gl3.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA16F, myCanvas.getWidth(), myCanvas.getWidth(), 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
+		System.out.println("Width : "+myCanvas.getWidth()+" Height : "+myCanvas.getHeight());
+		gl3.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA16F, myCanvas.getWidth(), myCanvas.getHeight(), 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
 		//gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
 		
 		//tell the framebuffer to render to the backface texture and do colors (other options are rending the depth buffer for shadows)
@@ -379,6 +399,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		}
 		//unbind the framebuffer
 		gl3.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
+		
+		//createTest Volume
+		create_TestVolume(gl3);
 	}
 	
 	
@@ -761,7 +784,51 @@ private void installLighting(GL3 gl){
 		//draw
 	}
 
-
+	private void create_TestVolume(GL3 gl){
+		int size=100*100*100;
+		
+		float[] data= new float[size*4];
+		
+		// not sure about the order here
+		for(int x=0; x<100;x++)
+		{
+			for(int y=0;y<100;y++)
+			{
+				for(int z=0;z<100;z++)
+				{
+					 
+					if (x<50&&y<50&&z<50)
+					{
+						data[x*4]=0.0f;
+						data[x*4+1]=0.0f;
+						data[x*4+2]=1.0f;
+						data[x*4+3]=0.7f;
+					}
+					else
+					{
+						data[x*4]=0.0f;
+						data[x*4+1]=0.0f;
+						data[x*4+2]=1.0f;
+						data[x*4+3]=0.2f;
+					}
+						
+				}
+			}
+			
+		}
+		
+		gl.glGenTextures(1, volumeTextureID,0);
+		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
+		
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
+		
+		FloatBuffer buffer=FloatBuffer.wrap(data);
+		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, 100, 100,100,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
+	}
 	/**
 	 * Check openGL error stack for errors at a location specified by the string passed.
 	 * Static so it is available to all.

@@ -32,7 +32,7 @@ void main()
 {      
 	
 
-	vec3 textColor=vec3(texture2D(colorMap, TexCoord.st)); 
+	vec3 textColor=vec3(texture2D(colorMap, TexCoord.ts)); 
 	vec4 color;
 	color=vec4(textColor,1);
 

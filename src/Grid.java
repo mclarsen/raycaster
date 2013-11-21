@@ -140,15 +140,17 @@ public class Grid extends Shape3D{
 			}
 			else if (i==(numVerts/2)*4){
 				colors[i]=0f;
-				colors[i+1]=0f;
-				colors[i+2]=1f;
-				colors[i+3]=1f;
-			}
-			else if(i==(numVerts*4-8)){
-				colors[i]=0f;
 				colors[i+1]=1f;
 				colors[i+2]=0f;
 				colors[i+3]=1f;	
+			}
+			else if(i==(numVerts*4-8)){
+				
+				
+				colors[i]=0f;
+				colors[i+1]=0f;
+				colors[i+2]=1f;
+				colors[i+3]=1f;
 			}
 			else{
 				colors[i]=.5f;

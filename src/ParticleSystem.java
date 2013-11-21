@@ -224,6 +224,7 @@ public class ParticleSystem extends Shape3D {
 			//System.out.println("HHH"+ mv);
 			gl.glActiveTexture(GL3.GL_TEXTURE1);
 		    texture.bind(gl);
+		    gl.glBindTexture( GL3.GL_TEXTURE_2D,  OpenGLFrame.backFaceTextureID[0]);
 		    gl.glUniform1i(renderLocs.getColorMapLoc(), 1);
 		    
 		    gl.glDisable(GL3.GL_RASTERIZER_DISCARD);
