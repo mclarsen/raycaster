@@ -89,7 +89,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	
 	//shaderProgram IDs
 	private int IdentityProgID;
-
+	private int raycastProgID;
 	
 	// projection vars
 	private float fov=40;
@@ -128,6 +128,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     
     // Shader Programs
     private ShaderProgram identityShader;
+    private ShaderProgram raycastShader;
     
     
     //******************Volume Rendering Vars******************************
@@ -262,15 +263,16 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		installLighting(gl);
 		gl.glUseProgram(identityShader.getProgramID());
-		
-		//********************Render the backface to the framebuffer texture***********************************
-
-		//System.out.println("Proj: " + proj);
+		//---------set uniforms for the identity shader
 		ps.setProjectionMatrix(proj);
 		double[]  projVals= proj.getValues();									//get projection matrix
 		float[] projValsf= new float[projVals.length];
 		for(int i=0; i<projVals.length;i++)projValsf[i]=(float) projVals[i];	//convert to floats
 		gl.glUniformMatrix4fv(IdentityLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to shader
+		//********************Render the backface to the framebuffer texture***********************************
+
+		//System.out.println("Proj: " + proj);
+		
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -280,16 +282,29 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		theBox.draw(arg0);
 		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);							//undbind the renderbuffer
 		
-		// Now lets do some casting
-		//*****************************************************************************************************
+		// Now lets do some casting----------------------------------------------------------------------------
+		gl.glUseProgram(raycastProgID);
+		gl.glUniformMatrix4fv(RaycastLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to raycast shader
+		//bind the two textures
+		gl.glEnable(GL3.GL_BLEND);
+		//gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glActiveTexture(GL3.GL_TEXTURE1);
+	    gl.glBindTexture( GL3.GL_TEXTURE_2D,  backFaceTextureID[0]);
+	    gl.glUniform1i(RaycastLocs.getColorMapLoc(), 1);
+	    gl.glActiveTexture(GL3.GL_TEXTURE2);
+	    gl.glBindTexture( GL3.GL_TEXTURE_3D,  volumeTextureID[0]);
+	    gl.glUniform1i(RaycastLocs.getVolumeLoc(), 2);
+	    theBox.renderFrontFace(true);
+	    theBox.draw(arg0);
 		
-		theBox.draw(arg0);
+		//*****************************************************************************************************
+		gl.glUseProgram(identityShader.getProgramID());
+		
 		if (wireFrameOn) gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE);  //enable wirefram if set
 		else gl.glPolygonMode( GL3.GL_FRONT_AND_BACK, GL3.GL_FILL );
 		
 
 		if (drawAxisOn) {
-	
 			grid.draw(arg0);										//Draw axis grid if enable
 		}
 		
@@ -324,7 +339,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl3.glEnable(GL3.GL_DEPTH_TEST);								
 		gl3.glEnable(GL3.GL_CULL_FACE);
 		/*
-		 *  shader creation code
+		 *  Identity shader creation code
 		 */
 		identityShader= new ShaderProgram();
 		identityShader.addShader("Shaders/Identity.vert", ShaderProgram.VERTEX_SHADER);
@@ -335,19 +350,31 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl3.glUseProgram(IdentityProgID);
 		IdentityLocs.setShaderID(IdentityProgID, gl3);
 		/*
+		 *  RayCasting shader creation code
+		 */
+		raycastShader= new ShaderProgram();
+		raycastShader.addShader("Shaders/raycast.vert", ShaderProgram.VERTEX_SHADER);
+		raycastShader.addShader("Shaders/raycast.frag", ShaderProgram.FRAGMENT_SHADER);
+		raycastShader.compileProgram(arg0);
+		raycastShader.linkProgram(arg0);
+		raycastProgID= raycastShader.getProgramID();
+		gl3.glUseProgram(raycastProgID);
+		RaycastLocs.setShaderID(gl3,raycastProgID);
+		
+		/*
 		 * init drawables
 		 */
 		grid= new Grid(18, gl3);
 		grid.scale(2, 2, 2);
 		theBox= new BoundingBox(gl3);
-		theBox.translate(1, 0, 0);
+		theBox.translate(0, 0, 0);
 		//theBox.scale(1, 1, 10);
 		theBox.renderFrontFace(false);
 		
 		theLight= new LightSphere(gl3, new Point3D(0,0,0), 20, .1, Color.YELLOW);
 		
 		//RandomTexture test= new RandomTexture(64, gl3);
-		ps=new ParticleSystem(arg0, createTexture(gl3, "two.jpg", true), 10000);
+		ps=new ParticleSystem(arg0, createTexture(gl3, "two.jpg", true), 1000);
 		ps.scale(100, 100, 100);
 		
 		errorCheck(gl3,"end init");							//check for errors
@@ -790,30 +817,23 @@ private void installLighting(GL3 gl){
 		float[] data= new float[size*4];
 		
 		// not sure about the order here
-		for(int x=0; x<100;x++)
+		for(int x=0; x<1000000;x++)
 		{
-			for(int y=0;y<100;y++)
-			{
-				for(int z=0;z<100;z++)
-				{
-					 
-					if (x<50&&y<50&&z<50)
+			
+					if (x<500000)
 					{
-						data[x*4]=0.0f;
+						data[x*4]=1.0f;
 						data[x*4+1]=0.0f;
-						data[x*4+2]=1.0f;
-						data[x*4+3]=0.7f;
+						data[x*4+2]=0.0f;
+						data[x*4+3]=0.4f;
 					}
 					else
 					{
 						data[x*4]=0.0f;
 						data[x*4+1]=0.0f;
 						data[x*4+2]=1.0f;
-						data[x*4+3]=0.2f;
+						data[x*4+3]=1.0f;
 					}
-						
-				}
-			}
 			
 		}
 		

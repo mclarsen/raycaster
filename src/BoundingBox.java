@@ -99,11 +99,14 @@ public class BoundingBox extends Shape3D{
 	@Override
 	public void draw(GLAutoDrawable drawable) {
 		GL3 gl = (GL3) drawable.getGL();
+		
 		if(!renderFront) gl.glCullFace(GL.GL_FRONT);  //cull front faces 
 
 		
 		//get shader vars
-		int mvMatLoc=IdentityLocs.getMVLoc();
+		int mvMatLoc;
+		if(!renderFront) mvMatLoc=IdentityLocs.getMVLoc();
+		else mvMatLoc=RaycastLocs.getMVPLoc();
 
 		MatrixStack mv= GeometryTransformPipeline.getModelViewMatrixStack();
 		mv.pushMatrix();
