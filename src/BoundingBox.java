@@ -107,16 +107,12 @@ public class BoundingBox extends Shape3D{
 		int mvMatLoc;
 		if(!renderFront) mvMatLoc=IdentityLocs.getMVLoc();
 		else mvMatLoc=RaycastLocs.getMVPLoc();
-
+		//mvMatLoc=IdentityLocs.getMVLoc();
 		MatrixStack mv= GeometryTransformPipeline.getModelViewMatrixStack();
 		mv.pushMatrix();
 			
 			mv.multMatrix(this.getTransform());
 			Matrix3D mvMat=mv.peek();
-			//System.out.println(mvMat.toString());
-			//System.out.println(this.getTranslation().toString());
-			//mvMat.concatenate(this.getTranslation());
-			//get projection matrix
 			// get mv matrix
 			double[] mvVals = mvMat.getValues();
 			float[] mvValsf= new float[mvVals.length];
@@ -128,7 +124,7 @@ public class BoundingBox extends Shape3D{
 			gl.glBindVertexArray(0);
 		mv.popMatrix();
 
-		if (!renderFront) gl.glCullFace(GL.GL_BACK); // retore cull face back to CCW
+		if (!renderFront) gl.glCullFace(GL.GL_BACK); // restore cull face back to CCW
 	}
 
 	public void renderFrontFace(boolean front){

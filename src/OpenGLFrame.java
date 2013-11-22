@@ -43,6 +43,7 @@ import javax.swing.border.TitledBorder;
 
 
 
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
@@ -299,6 +300,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		//*****************************************************************************************************
 		gl.glUseProgram(identityShader.getProgramID());
+		
+		//theBox.renderFrontFace(true);
+		//theBox.draw(arg0);
 		
 		if (wireFrameOn) gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE);  //enable wirefram if set
 		else gl.glPolygonMode( GL3.GL_FRONT_AND_BACK, GL3.GL_FILL );
@@ -848,6 +852,88 @@ private void installLighting(GL3 gl){
 		
 		FloatBuffer buffer=FloatBuffer.wrap(data);
 		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, 100, 100,100,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
+	}
+	
+	private void createTestVolume2(GL3 gl){
+		int xSize=128;
+		int ySize=128;
+		int zSize=128;
+		
+		float[] data= new float[xSize*ySize*zSize*4];
+		
+		for(int x=0; x<xSize;x++)
+		{
+			for(int y=0; y<ySize;y++)
+			{
+				for(int z=0; z<zSize;z++)
+				{
+					
+					data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = (z%250)/255.0f;
+					data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%250)/255.0f;
+					data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 230/255.0f;
+					
+					float length =	(float) Math.sqrt( (x-(xSize-20))*(x-(xSize-20))+ (y-(ySize-30))*(y-(ySize-30))+(z-(zSize-20))*(z-(zSize-20)) );
+					
+					//System.out.println(length);
+					boolean test = (length < 42);
+					if(test)
+						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
+
+					length =	(float) Math.sqrt( (x-(xSize/2))*(x-(xSize/2))+ (y-(ySize/2))*(y-(ySize/2))+(z-(zSize/2))*(z-(zSize/2)) );
+					
+					test = (length < 24);
+					if(test)
+						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
+					
+					if(x > 20 && x < 40 && y > 0 && y < ySize && z > 10 &&  z < 50)
+					{
+						
+						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 100/255.0f;
+					    data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					    data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%100)/255.0f;
+						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					}
+
+					if(x > 50 && x < 70 && y > 0 && y < ySize && z > 10 &&  z < 50)
+					{
+						
+						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					    data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					    data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%100)/255.0f;
+						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					}
+
+					if(x > 80 && x < 100 && y > 0 && y < ySize && z > 10 &&  z < 50)
+					{
+						
+						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					    data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 70/255.0f;
+					    data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%100)/255.0f;
+						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
+					}
+					
+					
+					length =	(float) Math.sqrt( (x-(24))*(x-(24))+ (y-(24))*(y-(24))+(z-(24))*(z-(24)) );
+					test = (length < 40);
+					if(test)
+						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
+					
+				}
+			}
+		}
+		gl.glGenTextures(1, volumeTextureID,0);
+		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
+		
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
+		for(int i=xSize*ySize*zSize*4-1; i>xSize*ySize*zSize*4-1000; i--) System.out.println(data[i]);
+		FloatBuffer buffer=FloatBuffer.wrap(data);
+		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, xSize, ySize,zSize,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
+		
 	}
 	/**
 	 * Check openGL error stack for errors at a location specified by the string passed.
