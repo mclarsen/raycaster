@@ -7,6 +7,7 @@ import graphicslib3D.MatrixStack;
 import graphicslib3D.Point3D;
 import graphicslib3D.Shape3D;
 import graphicslib3D.Vector3D;
+import graphicslib3D.Vertex3D;
 import graphicslib3D.light.PositionalLight;
 
 import java.awt.BorderLayout;
@@ -152,7 +153,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		myCamera= new Camera();				                   //create camera object
 
 		this.setLayout(new BorderLayout());                    //JFrame Setup
-		setTitle("Paricle System Demo");
+		setTitle("RayCast Demo");
 		setSize(1000,750);
 		setLocation(200,200);
 		
@@ -288,7 +289,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl.glUniformMatrix4fv(RaycastLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to raycast shader
 		//bind the two textures
 		gl.glEnable(GL3.GL_BLEND);
-		//gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glActiveTexture(GL3.GL_TEXTURE1);
 	    gl.glBindTexture( GL3.GL_TEXTURE_2D,  backFaceTextureID[0]);
 	    gl.glUniform1i(RaycastLocs.getColorMapLoc(), 1);
@@ -298,6 +299,17 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	    theBox.renderFrontFace(true);
 	    theBox.draw(arg0);
 		
+	    //Matrix3D mvp= GeometryTransformPipeline.getModelViewProjectionMatrix();
+	    //Matrix3D coord=new Matrix3D();
+	    //coord.translate(1, -1, -1);
+	    //mvp.concatenate(coord);
+	    //System.out.println("Screen X :  "+ (mvp.getCol(3).getX()/mvp.getCol(3).getW()+1)/2.0);
+	    //System.out.println("Screen Y :  "+ (mvp.getCol(3).getY()/mvp.getCol(3).getW()+1)/2.0);
+	    //System.out.println(mvp.getCol(3).toString());
+	    //Vertex3D t= new Vertex3D(1,0,0);
+	    //System.out.println(mvp.toString());
+	    //t=t.mult(mvp);
+	    //System.out.println(t.toString());
 		//*****************************************************************************************************
 		gl.glUseProgram(identityShader.getProgramID());
 		

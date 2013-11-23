@@ -17,6 +17,10 @@ out vec4 fragColor;
 void main()                                                                         
 {   float step=.005;
 
+	//vec3 camPos= vec3(0,0,10);
+	//vec3 theDir=varyingVert.xyz-camPos;
+	
+	
 	//calculate the geometry
 	vec2 backCoord=((varyingVert.xy/varyingVert.w+1)/2);//get the screenspace coordinates to lookup the right backface position
 	vec4 outLoc=texture(backFace,backCoord);
@@ -24,7 +28,7 @@ void main()
 	rayDir.x=outLoc.x-varyingColor.x;
 	rayDir.y=outLoc.y-varyingColor.y;
 	rayDir.z=outLoc.z-varyingColor.z;
-	//rayDir=varyingColor.xyz-outLoc.xyz;
+	
 	float rayLength=length(rayDir.xyz);
 	rayDir=normalize(rayDir);
 	
@@ -38,7 +42,7 @@ void main()
 	float sampleAlpha=0;
 	vec4 sampleColor= vec4(0,0,0,0);
 	
-/*	
+
 	for(int i=0; i<500;i++){
 		sampleColor=texture(volume, currentPosition.xyz);
 		sampleAlpha=sampleColor.a*step; //make sure we don't take the full alpha
@@ -50,18 +54,18 @@ void main()
 		//advance then check for termination
 		currentPosition+=rayStep;
 		currentLength+=stepLength;
-		if(currentLength>=rayLength || alphaChannel>1) break;
-		if(i>500) {currentColor=
-		 vec3(1,0,0);
+		if(currentLength>=rayLength || alphaChannel>=1) break;
+		if(i>300) {currentColor=
+		 vec3(0,1,0);
 		 alphaChannel=1;
 		break;		
 		}
 	}
-*/	
+	
 	//if(rayLength>0.5) fragColor=vec4(1,0,0,1);
 	//else fragColor=vec4(0,1,0,1);
-	fragColor= outLoc;
-	//fragColor= vec4(currentColor, alphaChannel);
+	//fragColor= outLoc;
+	fragColor= vec4(currentColor, alphaChannel);
 	//fragColor=texture(volume, varyingColor.xyz);
 	
 	
