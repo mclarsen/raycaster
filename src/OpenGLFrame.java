@@ -350,7 +350,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		GeometryTransformPipeline.setModelViewMatrixStack(modelViewMat);
 		GeometryTransformPipeline.setProjectionMatrixStack(projMat);
 		proj= new Matrix3D();
-		this.setPerspective(60f, 1f,.01f, 100f, proj);
+		this.setPerspective(50f, 1f,.01f, 10f, proj);
 		projMat.loadMatrix(proj);
 		gl3.glEnable(GL3.GL_DEPTH_TEST);								
 		gl3.glEnable(GL3.GL_CULL_FACE);

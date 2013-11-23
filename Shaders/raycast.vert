@@ -18,7 +18,7 @@ void main(void){
   
   vert = projMatrix*modelViewMatrix* vert;
   varyingVert=projMatrix*modelViewMatrix* vec4(vertPos,1);
-  gl_Position= vert;								//give this to satisfy the opengl Gods. Will never be used.
+  gl_Position= vert;										//give this to satisfy the opengl Gods. Will never be used.
   
   
  }
