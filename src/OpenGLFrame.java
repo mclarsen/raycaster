@@ -325,7 +325,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		}
 		
 		//theLight.draw(arg0);
-		ps.draw(gl, myCamera.getLocation(), myCamera.getUpAxis());
+		//ps.draw(gl, myCamera.getLocation(), myCamera.getUpAxis());
 		
 		errorCheck(gl,"display");												//check for errors in display
 	}
@@ -384,7 +384,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		grid.scale(2, 2, 2);
 		theBox= new BoundingBox(gl3);
 		theBox.translate(0, 0, 0);
-		//theBox.scale(1, 1, 10);
+		theBox.scale(1, 1, 1);
 		theBox.renderFrontFace(false);
 		
 		theLight= new LightSphere(gl3, new Point3D(0,0,0), 20, .1, Color.YELLOW);
@@ -444,7 +444,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl3.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
 		
 		//createTest Volume
-		create_TestVolume(gl3);
+		createTestVolume2(gl3);
 	}
 	
 	
@@ -838,9 +838,9 @@ private void installLighting(GL3 gl){
 			
 					if (x<500000)
 					{
-						data[x*4]=1.0f;
+						data[x*4]=0.0f;
 						data[x*4+1]=0.0f;
-						data[x*4+2]=0.0f;
+						data[x*4+2]=1.0f;
 						data[x*4+3]=0.4f;
 					}
 					else
@@ -848,7 +848,7 @@ private void installLighting(GL3 gl){
 						data[x*4]=0.0f;
 						data[x*4+1]=0.0f;
 						data[x*4+2]=1.0f;
-						data[x*4+3]=1.0f;
+						data[x*4+3]=0.4f;
 					}
 			
 		}
@@ -867,9 +867,9 @@ private void installLighting(GL3 gl){
 	}
 	
 	private void createTestVolume2(GL3 gl){
-		int xSize=128;
-		int ySize=128;
-		int zSize=128;
+		int xSize=100;
+		int ySize=100;
+		int zSize=100;
 		
 		float[] data= new float[xSize*ySize*zSize*4];
 		
@@ -880,57 +880,24 @@ private void installLighting(GL3 gl){
 				for(int z=0; z<zSize;z++)
 				{
 					
-					data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = (z%250)/255.0f;
-					data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%250)/255.0f;
-					data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 230/255.0f;
+					data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
+					data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 1.0f;
+					data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.5f;
+					data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = .7f;
 					
-					float length =	(float) Math.sqrt( (x-(xSize-20))*(x-(xSize-20))+ (y-(ySize-30))*(y-(ySize-30))+(z-(zSize-20))*(z-(zSize-20)) );
-					
+					float length;// =	(float) Math.sqrt( (x-(xSize-20))*(x-(xSize-20))+ (y-(ySize-30))*(y-(ySize-30))+(z-(zSize-20))*(z-(zSize-20)) );
+					length =	(float) Math.sqrt( (x-50)*(x-50)+ (y-50)*(y-50)+(z-50)*(z-50) );
+					length =	(float) Math.sqrt( (x)*(x)+ (y)*(y)+(z)*(z) );
 					//System.out.println(length);
-					boolean test = (length < 42);
+					boolean test = (length <90);
 					if(test)
-						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
-
-					length =	(float) Math.sqrt( (x-(xSize/2))*(x-(xSize/2))+ (y-(ySize/2))*(y-(ySize/2))+(z-(zSize/2))*(z-(zSize/2)) );
-					
-					test = (length < 24);
-					if(test)
-						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
-					
-					if(x > 20 && x < 40 && y > 0 && y < ySize && z > 10 &&  z < 50)
 					{
-						
-						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 100/255.0f;
-					    data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					    data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%100)/255.0f;
-						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					}
-
-					if(x > 50 && x < 70 && y > 0 && y < ySize && z > 10 &&  z < 50)
-					{
-						
-						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					    data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					    data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%100)/255.0f;
-						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					}
-
-					if(x > 80 && x < 100 && y > 0 && y < ySize && z > 10 &&  z < 50)
-					{
-						
-						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					    data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 70/255.0f;
-					    data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = (y%100)/255.0f;
-						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 250/255.0f;
-					}
-					
-					
-					length =	(float) Math.sqrt( (x-(24))*(x-(24))+ (y-(24))*(y-(24))+(z-(24))*(z-(24)) );
-					test = (length < 40);
-					if(test)
+						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
+						data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
+						data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
 						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
-					
+				
+					}
 				}
 			}
 		}

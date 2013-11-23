@@ -15,10 +15,9 @@ out vec4 fragColor;
 
 
 void main()                                                                         
-{   float step=.005;
+{   float step=.002;
 
-	//vec3 camPos= vec3(0,0,10);
-	//vec3 theDir=varyingVert.xyz-camPos;
+	
 	
 	
 	//calculate the geometry
@@ -45,28 +44,33 @@ void main()
 
 	for(int i=0; i<500;i++){
 		sampleColor=texture(volume, currentPosition.xyz);
-		sampleAlpha=sampleColor.a*step; //make sure we don't take the full alpha
-//		currentColor+=(1-alphaChannel)*sampleColor.rgb*sampleColor.a*3;//no idea about the 3
-		currentColor+=(1-alphaChannel)*sampleColor.rgb;
-//		alphaChannel+=sampleAlpha;
+		sampleAlpha=sampleColor.a*step*3; //make sure we don't take the full alpha
+		currentColor+=(1-alphaChannel)*sampleColor.rgb*3;
 		alphaChannel+=(1-alphaChannel)*sampleAlpha;
 		
 		//advance then check for termination
 		currentPosition+=rayStep;
 		currentLength+=stepLength;
-		if(currentLength>=rayLength || alphaChannel>=1) break;
-		if(i>300) {currentColor=
-		 vec3(0,1,0);
-		 alphaChannel=1;
+		if(currentLength>=rayLength ){
+			break;
+		}
+		
+		if(alphaChannel>=1) {
+			alphaChannel=1;
+			break;
+		}
+		
+		if(rayLength>5) {
+		currentColor=vec3(0,1,0);
+		alphaChannel=1;
 		break;		
 		}
 	}
 	
-	//if(rayLength>0.5) fragColor=vec4(1,0,0,1);
-	//else fragColor=vec4(0,1,0,1);
-	//fragColor= outLoc;
+	
+
 	fragColor= vec4(currentColor, alphaChannel);
-	//fragColor=texture(volume, varyingColor.xyz);
+
 	
 	
       
