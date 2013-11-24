@@ -35,14 +35,16 @@ void main()
 	float currentLength=0;
 	vec4 currentColor=vec4(0,0,0,0);
 	vec4 sampleColor= vec4(0,0,0,0);
-	
+	vec4 temp= vec4(0,0,0,0);
 
 	for(int i=0; i<1000;i++){
-		sampleColor=texture(volume, currentPosition.xyz);
-		sampleColor.a=sampleColor.a*step*3;               //make sure we don't take the full alpha
-		
+		temp=texture(volume, currentPosition.xyz);
+		sampleColor.r=0;
+		sampleColor.g=1;
+		sampleColor.b=1;
+		sampleColor.a=temp.r;
 		currentColor.rgb+=(1-currentColor.a)*sampleColor.rgb*3;
-		currentColor.a+=(1-currentColor.a)*sampleColor.a;
+		currentColor.a+=(1-currentColor.a)*sampleColor.a*step*100;   //make sure we don't take the full alpha
 		
 		//advance then check for termination
 		currentPosition+=rayStep;
@@ -55,8 +57,6 @@ void main()
 			currentColor.a=1;
 			break;
 		}
-		
-		
 
 	}
 	fragColor=currentColor;

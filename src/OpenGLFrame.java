@@ -230,6 +230,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	 */
 	@Override
 	public void display(GLAutoDrawable arg0) {
+		
+		//theBox.rotate(0, .1, 0);
+		
 		//System.out.println(light1Locs.getGlobalAmientLoc());
 		/*
 		 * Movement flags
@@ -341,6 +344,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	@Override
 	public void init(GLAutoDrawable arg0) {
 		GL3 gl3 = (GL3) arg0.getGL();
+		
+		
 		/*
 		 *  geometry pipeline code setup
 		 */
@@ -444,7 +449,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		gl3.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
 		
 		//createTest Volume
-		createTestVolume2(gl3);
+		//createTestVolume2(gl3);
+		this.createEngineVolume(gl3);
 	}
 	
 	
@@ -866,12 +872,30 @@ private void installLighting(GL3 gl){
 		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, 100, 100,100,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
 	}
 	
+	private void createEngineVolume(GL3 gl){
+		int xSize=256;
+		int ySize=256;
+		int zSize=113;
+		float data[] = RawReader.ReadRaw(16, 256, 256, 113, "head.raw");
+		
+		gl.glGenTextures(1, volumeTextureID,0);
+		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
+		
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
+		//for(int i=xSize*ySize*zSize*4-1; i>xSize*ySize*zSize*4-1000; i--) System.out.println(data[i]);
+		FloatBuffer buffer=FloatBuffer.wrap(data);
+		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xSize, ySize,zSize,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
+	}
 	private void createTestVolume2(GL3 gl){
 		int xSize=100;
 		int ySize=100;
 		int zSize=100;
 		
-		float[] data= new float[xSize*ySize*zSize*4];
+		float[] data= new float[xSize*ySize*zSize];
 		
 		for(int x=0; x<xSize;x++)
 		{
@@ -880,10 +904,8 @@ private void installLighting(GL3 gl){
 				for(int z=0; z<zSize;z++)
 				{
 					
-					data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
-					data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 1.0f;
-					data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.5f;
-					data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = .7f;
+					data[(x)   + (y * ySize ) + (z * zSize * ySize)] = 0.7f;
+					
 					
 					float length;// =	(float) Math.sqrt( (x-(xSize-20))*(x-(xSize-20))+ (y-(ySize-30))*(y-(ySize-30))+(z-(zSize-20))*(z-(zSize-20)) );
 					length =	(float) Math.sqrt( (x-50)*(x-50)+ (y-50)*(y-50)+(z-50)*(z-50) );
@@ -892,10 +914,8 @@ private void installLighting(GL3 gl){
 					boolean test = (length <90);
 					if(test)
 					{
-						data[(x*4)   + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
-						data[(x*4)+1 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
-						data[(x*4)+2 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0.0f;
-						data[(x*4)+3 + (y * ySize * 4) + (z * zSize * ySize * 4)] = 0;
+						data[(x)   + (y * ySize ) + (z * zSize * ySize )] = 0.0f;
+					
 				
 					}
 				}
@@ -909,9 +929,9 @@ private void installLighting(GL3 gl){
 		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
 		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
 		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
-		for(int i=xSize*ySize*zSize*4-1; i>xSize*ySize*zSize*4-1000; i--) System.out.println(data[i]);
+		//for(int i=xSize*ySize*zSize*4-1; i>xSize*ySize*zSize*4-1000; i--) System.out.println(data[i]);
 		FloatBuffer buffer=FloatBuffer.wrap(data);
-		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, xSize, ySize,zSize,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
+		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xSize, ySize,zSize,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
 		
 	}
 	/**
