@@ -52,8 +52,8 @@ void main()
 		sampleColor.rgba=texture(transferFunction,scalar).rgba;
 		
 		//sampleColor.a=scalar;
-		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb)*3;
-		currentColor.a+=((1-currentColor.a)*sampleColor.a)*step*25;   //make sure we don't take the full alpha
+		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a)*3;
+		currentColor.a+=((1-currentColor.a)*sampleColor.a)*step*20;   //make sure we don't take the full alpha
 		
 		//advance then check for termination
 		currentPosition+=rayStep;

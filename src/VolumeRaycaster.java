@@ -231,7 +231,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		//volumeBox.rotate(0, 0,.1);
+		volumeBox.rotate(0, .1,0);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
