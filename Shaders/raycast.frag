@@ -5,7 +5,8 @@
 
 
 uniform sampler2D backFace;
-uniform sampler3D volume;                                                     
+uniform sampler3D volume;     
+uniform sampler1D transferFunction;                                                  
 uniform float stepSize;
 uniform vec2 thresholds;
 uniform vec3 color;
@@ -47,9 +48,12 @@ void main()
 		sampleColor.b=color.b/1000;
 		if(scalar>thresholds.x && scalar <thresholds.y) scalar=scalar;
 		else scalar=0;
-		sampleColor.a=scalar;
-		currentColor.rgb+=(1-currentColor.a)*sampleColor.rgb*3;
-		currentColor.a+=(1-currentColor.a)*sampleColor.a*step*50;   //make sure we don't take the full alpha
+		
+		sampleColor.rgba=texture(transferFunction,scalar).rgba;
+		
+		//sampleColor.a=scalar;
+		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb)*3;
+		currentColor.a+=((1-currentColor.a)*sampleColor.a)*step*25;   //make sure we don't take the full alpha
 		
 		//advance then check for termination
 		currentPosition+=rayStep;
@@ -58,10 +62,10 @@ void main()
 			break;
 		}
 		
-		if(currentColor.a>=thresholds.y) {
-			currentColor.a=.7;
-			break;
-		}
+		//if(currentColor.a>=thresholds.y) {
+		//	//currentColor.a=.9;
+		//	break;
+		//}
 
 	}
 	fragColor=currentColor;

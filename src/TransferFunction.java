@@ -23,23 +23,32 @@ public  class TransferFunction  {
 	}
 	private ArrayList<PegPoint> pegs= new ArrayList<PegPoint>();
 	
-	public void addPegPoint(float sBegin, float sEnd, float a, float[] cBegin, float[] cEnd){
-		pegs.add(new PegPoint(sBegin,sEnd,a, cBegin, cEnd));
+	/**
+	 * @param sBegin scalar begin
+	 * @param sEnd scalar end
+	 * @param cBegin beginning color
+	 * @param cEnd	ending color
+	 */
+	public void addPegPoint(float sBegin, float sEnd, float[] cBegin, float[] cEnd){
+		pegs.add(new PegPoint(sBegin,sEnd, cBegin, cEnd));
 	}
+	
 	private float lerp(float cBegin, float pCurrent, float pB,float pE, float cEnd)
 	{
 		
 		return cBegin+((pCurrent-pB)/(pE-pB)*(cEnd-cBegin));
 	}
+	
 	public  float [] getTransferArray() {
 		Collections.sort(pegs, new pegCompare());
 		float[] data= new float[resolution*4];
 		float step=1/(float)resolution;
 		int currentPeg=0;
 		float currentStep=0;
+		boolean noMorePegs=false;
 		for(int i=0; i<resolution;i++)
 		{
-			if(pegs.get(currentPeg).scalarBegin>=currentStep)
+			if( noMorePegs|| pegs.get(currentPeg).scalarBegin>=currentStep )
 			{
 				data[i*4]=0;
 				data[i*4+1]=0;
@@ -51,12 +60,17 @@ public  class TransferFunction  {
 				data[i*4]=lerp(pegs.get(currentPeg).colorBegin[0],currentStep,pegs.get(currentPeg).scalarBegin,pegs.get(currentPeg).scalarEnd,pegs.get(currentPeg).colorEnd[0]);
 				data[i*4+1]=lerp(pegs.get(currentPeg).colorBegin[1],currentStep,pegs.get(currentPeg).scalarBegin,pegs.get(currentPeg).scalarEnd,pegs.get(currentPeg).colorEnd[1]);
 				data[i*4+2]=lerp(pegs.get(currentPeg).colorBegin[2],currentStep,pegs.get(currentPeg).scalarBegin,pegs.get(currentPeg).scalarEnd,pegs.get(currentPeg).colorEnd[2]);
-				data[i*4+3]=pegs.get(currentPeg).alha;
+				data[i*4+3]=lerp(pegs.get(currentPeg).colorBegin[3],currentStep,pegs.get(currentPeg).scalarBegin,pegs.get(currentPeg).scalarEnd,pegs.get(currentPeg).colorEnd[3]);
 			}
 			else
 			{
 				currentPeg++;
+				if(currentPeg==pegs.size())
+					noMorePegs=true;
+				
+					
 			}
+			currentStep+=step;
 		
 		}
 		return data;
@@ -67,13 +81,13 @@ public  class TransferFunction  {
 	public class PegPoint{
 		public float scalarBegin=0f;
 		public float scalarEnd=1f;
-		public float alha=1f;
-		public float[] colorBegin= new float[3];
-		public float[] colorEnd=new float[3];
-		public PegPoint(float sBegin, float sEnd, float a, float[] cBegin, float[] cEnd){
+		public float alpha=1f;
+		public float[] colorBegin= new float[4];
+		public float[] colorEnd=new float[4];
+		
+		public PegPoint(float sBegin, float sEnd,  float[] cBegin, float[] cEnd){
 			scalarBegin=sBegin;
 			scalarEnd=sEnd;
-			alha=a;
 			colorBegin= cBegin;
 			colorEnd=cEnd;
 		}
