@@ -32,6 +32,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -139,7 +140,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     JSlider lowerCutoff;
     JLabel  upperVal;
     JLabel  lowerVal;
-    
+    JColorChooser colorPicker;
     //******************Volume Rendering Vars******************************
 
 
@@ -265,6 +266,60 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		commandPanel.add(lowerCutoff);
 		lowerVal= new JLabel("Lower Bound: 0");
 		commandPanel.add(lowerVal);
+
+		final JLabel rLabel=new JLabel("Red: 1");
+		final JSlider r=new JSlider(JSlider.VERTICAL,0, 100, 1);
+		r.setMajorTickSpacing(100);
+		r.setPaintTicks(true);
+		r.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				JSlider source = (JSlider)arg0.getSource();
+				rLabel.setText("Red: "+r.getValue()/100f);
+				float[] color=theVolume.getColor();
+				color[0]=source.getValue()/100f;
+				theVolume.setColor(color);
+			}
+		});
+		commandPanel.add(r);
+		commandPanel.add(rLabel);
+		
+		final JLabel gLabel=new JLabel("Green: 1");
+		final JSlider g=new JSlider(JSlider.VERTICAL,0, 100, 1);
+		g.setMajorTickSpacing(100);
+		g.setPaintTicks(true);
+		g.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				JSlider source = (JSlider)arg0.getSource();
+				gLabel.setText("Green: "+source.getValue()/100f);
+				float[] color=theVolume.getColor();
+				color[1]=source.getValue()/100f;
+				theVolume.setColor(color);
+				//System.out.println("changed. "+source.getValue());
+			}
+		});
+		commandPanel.add(g);
+		commandPanel.add(gLabel);
+		
+		final JLabel bLabel=new JLabel("Blue: 1");
+		final JSlider b=new JSlider(JSlider.VERTICAL,0, 100, 1);
+		b.setMajorTickSpacing(100);
+		b.setPaintTicks(true);
+		b.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				JSlider source = (JSlider)arg0.getSource();
+				bLabel.setText("Blue: "+source.getValue()/100f);
+				float[] color=theVolume.getColor();
+				color[2]=source.getValue()/100f;
+				System.out.println(color[0]+" "+color[1]+" "+color[2]);
+				theVolume.setColor(color);
+				System.out.println("changed. "+source.getValue()/100f);
+			}
+		});
+		commandPanel.add(b);
+		commandPanel.add(bLabel);
 	}
 	
 	//--------------------------------------------GL Event Listener Methods---------------------------------------------------------
@@ -404,9 +459,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		initLights(gl3);
 		
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true);
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true);
 		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false);
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false);
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false);
 		//theVolume.setScale(1f, 1f, .61f);
 		
 		//createTest Volume

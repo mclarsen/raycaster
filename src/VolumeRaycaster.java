@@ -32,6 +32,8 @@ public class VolumeRaycaster {
     
     private float upperCutoff=1;
     private float lowerCutoff=0;
+    private float[] color= {1.0f,1.0f,1.0f};
+    private float red=1;
     
 	public VolumeRaycaster(GLAutoDrawable arg0, int screenHeight, int screenWidth,String fname,int xSize,int ySize,int zSize, int bitSize, boolean bigEndian )
 	{
@@ -117,7 +119,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		volumeBox.rotate(0, 0,.1);
+		//volumeBox.rotate(0, 0,.1);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -137,6 +139,7 @@ public class VolumeRaycaster {
 		gl.glUniformMatrix4fv(rayLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to shader
 		
 		gl.glUniform2f(rayLocs.getThreshLoc(), lowerCutoff, upperCutoff);
+		gl.glUniform3f(rayLocs.getColorLoc(), color[0], color[1],color[2]); //glUniform3f  (rayLocs.getColorLoc(),color);
 		//bind the two textures
 		gl.glEnable(GL3.GL_BLEND);
 		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
@@ -164,6 +167,17 @@ public class VolumeRaycaster {
 	public void setLowerCutoff(float c){
 		if (c>=0&&c<=1) this.lowerCutoff=c;
 	}
+	public void setColor(float[] c){
+		this.color[0]=c[0];
+		this.color[1]=c[1];
+		this.color[2]=c[2];
+		//System.out.println(color[0]+" "+color[1]+" "+color[2]);
+	}
+	public void setRed(float r){
+		this.red=r;
+		System.out.println("Red "+r);
+	}
+	public float[] getColor(){return color;}
 	private void loadVolume(GL3 gl){
 
 		float data[] = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
