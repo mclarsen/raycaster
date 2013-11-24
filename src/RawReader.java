@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 public class RawReader {
 
 	
-	public static float[] ReadRaw(int bitSize, int xDim, int yDim, int zDim, String filename) {
+	public static float[] ReadRaw(int bitSize, int xDim, int yDim, int zDim, String filename, boolean isBigEndian) {
 		float[] data= new float[xDim*xDim*xDim];
 		File file = new File(filename);
 		System.out.println("FileSize : " +file.length());
@@ -24,7 +24,6 @@ public class RawReader {
 			input = new BufferedInputStream(new FileInputStream(file));
 			while(totalBytesRead < result.length){
 		          int bytesRemaining = result.length - totalBytesRead;
-		          //input.read() returns -1, 0, or more :
 		          int bytesRead = input.read(result, totalBytesRead, bytesRemaining); 
 		          if (bytesRead > 0){
 		            totalBytesRead = totalBytesRead + bytesRead;
@@ -58,13 +57,6 @@ public class RawReader {
         		temp=result[i]&0xff;
         		//if (temp>0) System.out.println(temp);
         		data[i]=temp/255.0f;
-        		
-//        		
-//        		data[i*4]=temp/255.0f;
-//        		data[i*4+1]=temp/255.0f;
-//        		data[i*4+2]=temp/255.0f;
-//        		data[i*4+3]=temp/255.0f;
-//        		
         	}
         	
         }
@@ -76,7 +68,8 @@ public class RawReader {
         		temp[0]=result[i*2];
         		temp[1]=result[i*2+1];
         		ByteBuffer buffer = ByteBuffer.wrap(temp);
-        		buffer.order(ByteOrder.BIG_ENDIAN);  // if you want little-endian
+        		if (isBigEndian) buffer.order(ByteOrder.BIG_ENDIAN);  
+        		else buffer.order(ByteOrder.LITTLE_ENDIAN);  
         		int t = buffer.getShort();
         		//if (t>0) System.out.println(t);
         		data[i]=t/65535.0f;

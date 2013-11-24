@@ -3,14 +3,15 @@ import javax.media.opengl.GL3;
 
 public class RaycastLocs {
 
-	private static int mvLoc=-1;
-	private static int stepSize=-1;
-	private static int backFaceMap=-1;
-	private static int projMat=-1;
-	private static int volume=-1;
+	private  int mvLoc=-1;
+	private  int stepSize=-1;
+	private  int backFaceMap=-1;
+	private  int projMat=-1;
+	private  int volume=-1;
+	private int progID=-1;
 	
-	
-	public static void setShaderID(GL3 gl, int programID){
+	public  RaycastLocs(GL3 gl, int programID){
+		progID=programID;
 		mvLoc= gl.glGetUniformLocation(programID, "modelViewMatrix");
 		backFaceMap=gl.glGetUniformLocation(programID, "backFace");
 		projMat=gl.glGetUniformLocation(programID, "projMatrix");
@@ -30,12 +31,12 @@ public class RaycastLocs {
 		}
 	}
 	
-	public static int getMVPLoc(){ return mvLoc;}
-	public static int getVolumeLoc(){ return volume;}
-	public static int getProjLoc(){ return projMat;}
-
-	public static int getStepSizeLoc(){return stepSize;}
-	public static int getColorMapLoc(){return backFaceMap;}
+	public  int getMVPLoc(){ return mvLoc;}
+	public  int getVolumeLoc(){ return volume;}
+	public  int getProjLoc(){ return projMat;}
+	public  int getProgID(){return progID;}
+	public  int getStepSizeLoc(){return stepSize;}
+	public  int getColorMapLoc(){return backFaceMap;}
 
 
 }

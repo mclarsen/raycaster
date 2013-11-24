@@ -85,6 +85,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	private MatrixStack modelViewMat= new MatrixStack(MAX_STACK_SIZE);
 	private MatrixStack projMat= new MatrixStack(MAX_STACK_SIZE);
 	private Matrix3D proj;
+	public static Matrix3D projM;
 	
 	private int currentWidth;
 	private int currentHeight;
@@ -102,7 +103,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     Grid grid;
     ParticleSystem ps;
     LightSphere theLight;
-    BoundingBox theBox;
+    VolumeRaycaster theVolume;
     
     //lights
     private PositionalLight light1= new PositionalLight();
@@ -130,14 +131,12 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     
     // Shader Programs
     private ShaderProgram identityShader;
-    private ShaderProgram raycastShader;
+    
     
     
     //******************Volume Rendering Vars******************************
-    public static int[] backFaceTextureID= new int[1];
-    private int[] backFaceFrameBuff= new int [1];
-    public static int[] volumeTextureID= new int[1];
-    private boolean doOnce=true;  //FIND ME and remove
+
+
     
 	/**
 	 * Default constructor
@@ -265,7 +264,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		GeometryTransformPipeline.getModelViewMatrix().setToIdentity();
 		GeometryTransformPipeline.getModelViewMatrixStack().loadMatrix(this.lookAt(myCamera));
 		GeometryTransformPipeline.getProjectionMatrixStack().loadMatrix(proj);
-		
+		OpenGLFrame.projM=(Matrix3D) proj.clone();
 		installLighting(gl);
 		gl.glUseProgram(identityShader.getProgramID());
 		//---------set uniforms for the identity shader
@@ -274,45 +273,14 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		float[] projValsf= new float[projVals.length];
 		for(int i=0; i<projVals.length;i++)projValsf[i]=(float) projVals[i];	//convert to floats
 		gl.glUniformMatrix4fv(IdentityLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to shader
+		
 		//********************Render the backface to the framebuffer texture***********************************
 
-		//System.out.println("Proj: " + proj);
 		
 		
-		//render to the buffer
-		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
-		gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D, backFaceTextureID[0], 0);
-		gl.glClear(GL3.GL_COLOR_BUFFER_BIT|GL3.GL_DEPTH_BUFFER_BIT); 			// clear color and depth buffer
-		theBox.renderFrontFace(false);
-		theBox.draw(arg0);
-		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);							//undbind the renderbuffer
+		theVolume.Draw(arg0);
 		
-		// Now lets do some casting----------------------------------------------------------------------------
-		gl.glUseProgram(raycastProgID);
-		gl.glUniformMatrix4fv(RaycastLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to raycast shader
-		//bind the two textures
-		gl.glEnable(GL3.GL_BLEND);
-		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glActiveTexture(GL3.GL_TEXTURE1);
-	    gl.glBindTexture( GL3.GL_TEXTURE_2D,  backFaceTextureID[0]);
-	    gl.glUniform1i(RaycastLocs.getColorMapLoc(), 1);
-	    gl.glActiveTexture(GL3.GL_TEXTURE2);
-	    gl.glBindTexture( GL3.GL_TEXTURE_3D,  volumeTextureID[0]);
-	    gl.glUniform1i(RaycastLocs.getVolumeLoc(), 2);
-	    theBox.renderFrontFace(true);
-	    theBox.draw(arg0);
-		
-	    //Matrix3D mvp= GeometryTransformPipeline.getModelViewProjectionMatrix();
-	    //Matrix3D coord=new Matrix3D();
-	    //coord.translate(1, -1, -1);
-	    //mvp.concatenate(coord);
-	    //System.out.println("Screen X :  "+ (mvp.getCol(3).getX()/mvp.getCol(3).getW()+1)/2.0);
-	    //System.out.println("Screen Y :  "+ (mvp.getCol(3).getY()/mvp.getCol(3).getW()+1)/2.0);
-	    //System.out.println(mvp.getCol(3).toString());
-	    //Vertex3D t= new Vertex3D(1,0,0);
-	    //System.out.println(mvp.toString());
-	    //t=t.mult(mvp);
-	    //System.out.println(t.toString());
+	    
 		//*****************************************************************************************************
 		gl.glUseProgram(identityShader.getProgramID());
 		
@@ -370,27 +338,16 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		IdentityProgID= identityShader.getProgramID();
 		gl3.glUseProgram(IdentityProgID);
 		IdentityLocs.setShaderID(IdentityProgID, gl3);
-		/*
-		 *  RayCasting shader creation code
-		 */
-		raycastShader= new ShaderProgram();
-		raycastShader.addShader("Shaders/raycast.vert", ShaderProgram.VERTEX_SHADER);
-		raycastShader.addShader("Shaders/raycast.frag", ShaderProgram.FRAGMENT_SHADER);
-		raycastShader.compileProgram(arg0);
-		raycastShader.linkProgram(arg0);
-		raycastProgID= raycastShader.getProgramID();
-		gl3.glUseProgram(raycastProgID);
-		RaycastLocs.setShaderID(gl3,raycastProgID);
+		
+		
 		
 		/*
 		 * init drawables
 		 */
 		grid= new Grid(18, gl3);
 		grid.scale(2, 2, 2);
-		theBox= new BoundingBox(gl3);
-		theBox.translate(0, 0, 0);
-		theBox.scale(1, 1, 1);
-		theBox.renderFrontFace(false);
+
+		
 		
 		theLight= new LightSphere(gl3, new Point3D(0,0,0), 20, .1, Color.YELLOW);
 		
@@ -402,56 +359,14 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		initLights(gl3);
 		
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true);
 		
-		//Create Framebuffer to store the coordinates of the back face of the volume
-		//inside of a texture
-		//----------------------------------------------------------------------------
-		//generate the framebuffer and the texture that will be rendered to.
-		gl3.glGenTextures (1, backFaceTextureID,0);
-		gl3.glGenFramebuffers (1, backFaceFrameBuff,0);
-		
-		int frameBuffID= backFaceFrameBuff[0];
-		int backFaceTextID= backFaceTextureID[0];
-		
-		//bind them so we can set them up
-		gl3.glBindFramebuffer (GL3.GL_FRAMEBUFFER, frameBuffID);
-		gl3.glBindTexture (GL3.GL_TEXTURE_2D, backFaceTextID);
-		
-		//texture settings
-		
-		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
-		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
-		gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
-		
-		System.out.println("Width : "+myCanvas.getWidth()+" Height : "+myCanvas.getHeight());
-		gl3.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA16F, myCanvas.getWidth(), myCanvas.getHeight(), 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
-		//gl3.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
-		
-		//tell the framebuffer to render to the backface texture and do colors (other options are rending the depth buffer for shadows)
-		gl3.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D, backFaceTextID, 0);
-		
-		//check the status of the frame buff
-		int frameCode=gl3.glCheckFramebufferStatus (GL3.GL_FRAMEBUFFER);
-		if (frameCode!=GL3.GL_FRAMEBUFFER_COMPLETE) {
-			System.out.println("ERROR creating frame buffer");
-			if(frameCode==GL3.GL_FRAMEBUFFER_UNDEFINED) System.out.println("Undefined");
-			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT ) System.out.println("Incomplete Attachment");
-			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT ) System.out.println("No Attatchmemt");
-			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER ) System.out.println("Incomplete Draw Buffer");
-			if(frameCode==GL3.GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER ) System.out.println("Incomplete ReadBuffer");
-			if(frameCode==GL3.GL_FRAMEBUFFER_UNSUPPORTED ) System.out.println("Not supported");
-			//if(frameCode==GL3.GL_FRAMEBUFFER_UNDEFINED) System.out.println("Undefined");
-			
-			
-		}
-		//unbind the framebuffer
-		gl3.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
 		
 		//createTest Volume
 		//createTestVolume2(gl3);
-		this.createEngineVolume(gl3);
+		//this.createEngineVolume(gl3);
 	}
+	
 	
 	
 	@Override
@@ -827,13 +742,9 @@ private void installLighting(GL3 gl){
 	
 	}
 	
-	private void renderBack(GL3 gl){
-		gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0, GL3.GL_TEXTURE_2D, backFaceFrameBuff[0], 0);
-		gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT );
-		//draw
-	}
+	
 
-	private void create_TestVolume(GL3 gl){
+	/*private void create_TestVolume(GL3 gl){
 		int size=100*100*100;
 		
 		float[] data= new float[size*4];
@@ -872,24 +783,7 @@ private void installLighting(GL3 gl){
 		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, 100, 100,100,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
 	}
 	
-	private void createEngineVolume(GL3 gl){
-		int xSize=256;
-		int ySize=256;
-		int zSize=113;
-		float data[] = RawReader.ReadRaw(16, 256, 256, 113, "head.raw");
-		
-		gl.glGenTextures(1, volumeTextureID,0);
-		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
-		
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
-		//for(int i=xSize*ySize*zSize*4-1; i>xSize*ySize*zSize*4-1000; i--) System.out.println(data[i]);
-		FloatBuffer buffer=FloatBuffer.wrap(data);
-		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xSize, ySize,zSize,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
-	}
+	
 	private void createTestVolume2(GL3 gl){
 		int xSize=100;
 		int ySize=100;
@@ -933,7 +827,7 @@ private void installLighting(GL3 gl){
 		FloatBuffer buffer=FloatBuffer.wrap(data);
 		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xSize, ySize,zSize,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
 		
-	}
+	}*/
 	/**
 	 * Check openGL error stack for errors at a location specified by the string passed.
 	 * Static so it is available to all.

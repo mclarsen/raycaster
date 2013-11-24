@@ -47,11 +47,11 @@ public class BoundingBox extends Shape3D{
 			   			    	1f,1f,        0f,1f,     0f,0f,    1f,1f,   0f,0f,  1f,0f};
 	
 	private boolean renderFront=true;
+	private RaycastLocs rayLocs;
 	
-	
-	public BoundingBox  (GL3 gl){
+	public BoundingBox  (GL3 gl, RaycastLocs locs){
 		
-		
+		rayLocs=locs;
 
 		//this.rotate(180f, new Vector3D(0,0,1)); //flip
 		
@@ -106,7 +106,7 @@ public class BoundingBox extends Shape3D{
 		//get shader vars
 		int mvMatLoc;
 		if(!renderFront) mvMatLoc=IdentityLocs.getMVLoc();
-		else mvMatLoc=RaycastLocs.getMVPLoc();
+		else mvMatLoc=rayLocs.getMVPLoc();
 		//mvMatLoc=IdentityLocs.getMVLoc();
 		MatrixStack mv= GeometryTransformPipeline.getModelViewMatrixStack();
 		mv.pushMatrix();

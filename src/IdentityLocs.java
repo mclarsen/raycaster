@@ -9,7 +9,6 @@ public class IdentityLocs {
 	private static int progID=-1;
 	private static int vertLoc=-1;
 	private static int colorLoc=-1;
-	
 	public static void setShaderID(int shaderID, GL3 gl){
 		progID= shaderID;
 		//attributes
