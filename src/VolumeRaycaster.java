@@ -26,7 +26,12 @@ public class VolumeRaycaster {
     private boolean isBigEndian;
     private String fileName;
 
+    private float scalarMax=0;
+    private float scalarMin=1;
     
+    
+    private float upperCutoff=1;
+    private float lowerCutoff=0;
     
 	public VolumeRaycaster(GLAutoDrawable arg0, int screenHeight, int screenWidth,String fname,int xSize,int ySize,int zSize, int bitSize, boolean bigEndian )
 	{
@@ -112,7 +117,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		
+		volumeBox.rotate(0, 0,.1);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -131,7 +136,7 @@ public class VolumeRaycaster {
 		for(int i=0; i<projVals.length;i++)projValsf[i]=(float) projVals[i];	//convert to floats
 		gl.glUniformMatrix4fv(rayLocs.getProjLoc(), 1,false, projValsf,0); //send projection matrix to shader
 		
-		
+		gl.glUniform2f(rayLocs.getThreshLoc(), lowerCutoff, upperCutoff);
 		//bind the two textures
 		gl.glEnable(GL3.GL_BLEND);
 		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
@@ -148,10 +153,25 @@ public class VolumeRaycaster {
 
 	}
 	
+	public void setScale(float x, float y, float z){
+		volumeBox.scale(x, y, z);
+	}
+	
+	public void setUpperCutoff(float c){
+		if (c>=0&&c<=1) this.upperCutoff=c;
+	}
+	
+	public void setLowerCutoff(float c){
+		if (c>=0&&c<=1) this.lowerCutoff=c;
+	}
 	private void loadVolume(GL3 gl){
 
 		float data[] = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
-		
+		for(int i=0;i<data.length;i++){
+			if (data[i]>scalarMax) scalarMax=data[i];
+			if(data[i]<scalarMin) scalarMin=data[i];
+		}
+		System.out.println("Scalars  : "+scalarMin+" - "+scalarMax);
 		gl.glGenTextures(1, volumeTextureID,0);
 		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
 		

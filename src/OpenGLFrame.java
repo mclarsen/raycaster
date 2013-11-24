@@ -1,24 +1,25 @@
 
 
-import graphicslib3D.GLSLUtils;
 import graphicslib3D.GeometryTransformPipeline;
 import graphicslib3D.Matrix3D;
 import graphicslib3D.MatrixStack;
 import graphicslib3D.Point3D;
 import graphicslib3D.Shape3D;
 import graphicslib3D.Vector3D;
-import graphicslib3D.Vertex3D;
 import graphicslib3D.light.PositionalLight;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Random;
+
+
+
+import java.util.Hashtable;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -33,21 +34,22 @@ import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
-
-
-
-
-
-
-
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
+
+
 /**
  * @author larceny
  *This class is a JFrame that displays an openGl Canvas. Contained are camera controls
@@ -132,7 +134,11 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     // Shader Programs
     private ShaderProgram identityShader;
     
-    
+    //extra gui
+    JSlider upperCutoff;
+    JSlider lowerCutoff;
+    JLabel  upperVal;
+    JLabel  lowerVal;
     
     //******************Volume Rendering Vars******************************
 
@@ -153,7 +159,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 
 		this.setLayout(new BorderLayout());                    //JFrame Setup
 		setTitle("RayCast Demo");
-		setSize(1000,750);
+		setSize(1200,800);
 		setLocation(200,200);
 		
 		int input_MapName = JComponent.WHEN_IN_FOCUSED_WINDOW; // Key Binding setup
@@ -220,6 +226,45 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		pauseButton.setText("Pause Animation");
 		pauseButton.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "none");
 		commandPanel.add(pauseButton);
+		
+		
+		upperCutoff = new JSlider(JSlider.VERTICAL,0, 1000,1000);
+		//upperCutoff.addChangeListener(this);
+		upperCutoff.setMajorTickSpacing(100);
+		upperCutoff.setPaintTicks(true);
+		upperCutoff.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				JSlider source = (JSlider)arg0.getSource();
+				upperVal.setText("Upper Bound: "+upperCutoff.getValue()/1000f);
+				theVolume.setUpperCutoff(upperCutoff.getValue()/1000f);
+				//System.out.println("changed."+source.getValue());
+			}
+		});
+		
+
+
+		commandPanel.add(upperCutoff);
+		
+		upperVal= new JLabel("upper bound : 1");
+		commandPanel.add(upperVal);
+		
+		lowerCutoff = new JSlider(JSlider.VERTICAL,0, 1000, 0);
+		lowerCutoff.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				JSlider source = (JSlider)arg0.getSource();
+				lowerVal.setText("Lower Bound: "+lowerCutoff.getValue()/1000f);
+				theVolume.setLowerCutoff(lowerCutoff.getValue()/1000f);
+				//System.out.println("changed. "+source.getValue());
+			}
+		});
+		//upperCutoff.addChangeListener(this);
+		lowerCutoff.setMajorTickSpacing(100);
+		lowerCutoff.setPaintTicks(true);
+		commandPanel.add(lowerCutoff);
+		lowerVal= new JLabel("Lower Bound: 0");
+		commandPanel.add(lowerVal);
 	}
 	
 	//--------------------------------------------GL Event Listener Methods---------------------------------------------------------
@@ -360,7 +405,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		initLights(gl3);
 		
 		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true);
-		
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false);
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false);
+		//theVolume.setScale(1f, 1f, .61f);
 		
 		//createTest Volume
 		//createTestVolume2(gl3);

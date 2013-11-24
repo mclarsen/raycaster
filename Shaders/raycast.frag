@@ -7,6 +7,7 @@
 uniform sampler2D backFace;
 uniform sampler3D volume;                                                     
 uniform float stepSize;
+uniform vec2 thresholds;
 
 
 in vec4 varyingColor;//this is where the ray penetrates the volume
@@ -35,16 +36,18 @@ void main()
 	float currentLength=0;
 	vec4 currentColor=vec4(0,0,0,0);
 	vec4 sampleColor= vec4(0,0,0,0);
-	vec4 temp= vec4(0,0,0,0);
+	float scalar;
 
 	for(int i=0; i<1000;i++){
-		temp=texture(volume, currentPosition.xyz);
-		sampleColor.r=0;
-		sampleColor.g=1;
-		sampleColor.b=1;
-		sampleColor.a=temp.r;
+		scalar=texture(volume, currentPosition.xyz).r;
+		sampleColor.r=255;
+		sampleColor.g=102;
+		sampleColor.b=0;
+		if(scalar>thresholds.x && scalar <thresholds.y) scalar=scalar;
+		else scalar=0;
+		sampleColor.a=scalar;
 		currentColor.rgb+=(1-currentColor.a)*sampleColor.rgb*3;
-		currentColor.a+=(1-currentColor.a)*sampleColor.a*step*100;   //make sure we don't take the full alpha
+		currentColor.a+=(1-currentColor.a)*sampleColor.a*step*50;   //make sure we don't take the full alpha
 		
 		//advance then check for termination
 		currentPosition+=rayStep;

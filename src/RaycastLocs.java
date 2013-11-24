@@ -9,6 +9,7 @@ public class RaycastLocs {
 	private  int projMat=-1;
 	private  int volume=-1;
 	private int progID=-1;
+	private int threshLoc=-1;
 	
 	public  RaycastLocs(GL3 gl, int programID){
 		progID=programID;
@@ -16,16 +17,17 @@ public class RaycastLocs {
 		backFaceMap=gl.glGetUniformLocation(programID, "backFace");
 		projMat=gl.glGetUniformLocation(programID, "projMatrix");
 		volume=gl.glGetUniformLocation(programID, "volume");
-		
+		threshLoc=gl.glGetUniformLocation(programID, "thresholds");
 		
 		if ( mvLoc==-1 || volume==-1 || stepSize==-1 ||backFaceMap==-1
-				|| projMat==-1 ){
+				|| projMat==-1 ||threshLoc==-1){
 			System.out.println("Error getting RayCasgting locs");
 			System.out.println("mvLoc "+ mvLoc);
 			System.out.println("volume "+ volume);
 			System.out.println("backFace "+ backFaceMap);
 			System.out.println("ProjMat "+ projMat);
 			System.out.println("StepSize"+ stepSize);
+			System.out.println("threshLoc"+ threshLoc);
 
 
 		}
@@ -37,6 +39,7 @@ public class RaycastLocs {
 	public  int getProgID(){return progID;}
 	public  int getStepSizeLoc(){return stepSize;}
 	public  int getColorMapLoc(){return backFaceMap;}
+	public  int getThreshLoc(){return threshLoc;}
 
 
 }
