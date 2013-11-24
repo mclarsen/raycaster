@@ -59,7 +59,7 @@ void main()
 		}
 		
 		if(currentColor.a>=thresholds.y) {
-			currentColor.a=1;
+			currentColor.a=.7;
 			break;
 		}
 
