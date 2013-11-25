@@ -160,7 +160,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 
 		this.setLayout(new BorderLayout());                    //JFrame Setup
 		setTitle("RayCast Demo");
-		setSize(1200,800);
+		setSize(1000,750);
 		setLocation(200,200);
 		
 		int input_MapName = JComponent.WHEN_IN_FOCUSED_WINDOW; // Key Binding setup
@@ -365,7 +365,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		GeometryTransformPipeline.getModelViewMatrixStack().loadMatrix(this.lookAt(myCamera));
 		GeometryTransformPipeline.getProjectionMatrixStack().loadMatrix(proj);
 		OpenGLFrame.projM=(Matrix3D) proj.clone();
-		installLighting(gl);
+		//installLighting(gl);
 		gl.glUseProgram(identityShader.getProgramID());
 		//---------set uniforms for the identity shader
 		ps.setProjectionMatrix(proj);
@@ -377,7 +377,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		//********************Render the backface to the framebuffer texture***********************************
 
 		
-		
+		installLighting(gl);
 		theVolume.Draw(arg0);
 		
 	    
@@ -395,7 +395,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 			grid.draw(arg0);										//Draw axis grid if enable
 		}
 		
-		//theLight.draw(arg0);
+		theLight.draw(arg0);
 		//ps.draw(gl, myCamera.getLocation(), myCamera.getUpAxis());
 		
 		errorCheck(gl,"display");												//check for errors in display
@@ -457,7 +457,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		errorCheck(gl3,"end init");							//check for errors
 		
-		initLights(gl3);
+		
 		
 		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true);
 		
@@ -470,13 +470,15 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		//engine
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false);
-		theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false, this);
+		theVolume.addTransferFuncton(TransferFunctionFactory.getEngine2(), gl3);
 		theVolume.nextTransferFunction();
 		//Orange
-//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true);
+//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
 //		theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
 //		theVolume.nextTransferFunction();
+		
+		initLights(gl3);
 	}
 	
 	
@@ -820,11 +822,11 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		 light1.setAmbient(light1_ambient);
 		 light1.setPosition( new Point3D(0,4,0));
 		 theLight.translate(light1.getPosition().getX(), light1.getPosition().getY(), light1.getPosition().getZ());
-		 light1Locs= new LightAttributesLocs(gl, light1.getName(), ps.getRenderProgramId());
+		 light1Locs= new LightAttributesLocs(gl, light1.getName(),theVolume.getProgramID());
 	}
 	
 private void installLighting(GL3 gl){
-		gl.glUseProgram(ps.getRenderProgramId());
+		gl.glUseProgram(theVolume.getProgramID());
 		Matrix3D viewMat= this.lookAt(myCamera);
 		
 		// global ambient light
@@ -855,91 +857,13 @@ private void installLighting(GL3 gl){
 	}
 	
 	
-
-	/*private void create_TestVolume(GL3 gl){
-		int size=100*100*100;
-		
-		float[] data= new float[size*4];
-		
-		// not sure about the order here
-		for(int x=0; x<1000000;x++)
-		{
-			
-					if (x<500000)
-					{
-						data[x*4]=0.0f;
-						data[x*4+1]=0.0f;
-						data[x*4+2]=1.0f;
-						data[x*4+3]=0.4f;
-					}
-					else
-					{
-						data[x*4]=0.0f;
-						data[x*4+1]=0.0f;
-						data[x*4+2]=1.0f;
-						data[x*4+3]=0.4f;
-					}
-			
-		}
-		
-		gl.glGenTextures(1, volumeTextureID,0);
-		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
-		
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
-		
-		FloatBuffer buffer=FloatBuffer.wrap(data);
-		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, 100, 100,100,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
+	public float[] getLightPosition(){
+		float[] result = new float[3];
+		result[0]=(float) myCamera.getLocation().getX();
+		result[1]=(float) myCamera.getLocation().getY();
+		result[2]=(float) myCamera.getLocation().getZ();
+		return result;
 	}
-	
-	
-	private void createTestVolume2(GL3 gl){
-		int xSize=100;
-		int ySize=100;
-		int zSize=100;
-		
-		float[] data= new float[xSize*ySize*zSize];
-		
-		for(int x=0; x<xSize;x++)
-		{
-			for(int y=0; y<ySize;y++)
-			{
-				for(int z=0; z<zSize;z++)
-				{
-					
-					data[(x)   + (y * ySize ) + (z * zSize * ySize)] = 0.7f;
-					
-					
-					float length;// =	(float) Math.sqrt( (x-(xSize-20))*(x-(xSize-20))+ (y-(ySize-30))*(y-(ySize-30))+(z-(zSize-20))*(z-(zSize-20)) );
-					length =	(float) Math.sqrt( (x-50)*(x-50)+ (y-50)*(y-50)+(z-50)*(z-50) );
-					length =	(float) Math.sqrt( (x)*(x)+ (y)*(y)+(z)*(z) );
-					//System.out.println(length);
-					boolean test = (length <90);
-					if(test)
-					{
-						data[(x)   + (y * ySize ) + (z * zSize * ySize )] = 0.0f;
-					
-				
-					}
-				}
-			}
-		}
-		gl.glGenTextures(1, volumeTextureID,0);
-		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);
-		
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
-		//for(int i=xSize*ySize*zSize*4-1; i>xSize*ySize*zSize*4-1000; i--) System.out.println(data[i]);
-		FloatBuffer buffer=FloatBuffer.wrap(data);
-		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xSize, ySize,zSize,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
-		
-	}*/
 	/**
 	 * Check openGL error stack for errors at a location specified by the string passed.
 	 * Static so it is available to all.

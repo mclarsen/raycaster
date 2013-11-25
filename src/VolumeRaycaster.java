@@ -13,7 +13,7 @@ import javax.media.opengl.GLAutoDrawable;
  */
 
 public class VolumeRaycaster {
-	
+	private OpenGLFrame theFrame;
     private ArrayList<TransferFunction> transferFunctions;
     private final static int maxTransferFunctions=5;
     public static int[] backFaceTextureID= new int[1];
@@ -48,8 +48,9 @@ public class VolumeRaycaster {
     private TransferFunction defaultTransferFunction;
     
     
-	public VolumeRaycaster(GLAutoDrawable arg0, int screenHeight, int screenWidth,String fname,int xSize,int ySize,int zSize, int bitSize, boolean bigEndian,boolean autoScale )
+	public VolumeRaycaster(GLAutoDrawable arg0, int screenHeight, int screenWidth,String fname,int xSize,int ySize,int zSize, int bitSize, boolean bigEndian,boolean autoScale , OpenGLFrame frame)
 	{
+		theFrame=frame;
 		xDim=xSize;
 		yDim=ySize;
 		zDim=zSize;
@@ -231,7 +232,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		volumeBox.rotate(0, .1,0);
+		//volumeBox.rotate(0, .1,0);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -252,6 +253,9 @@ public class VolumeRaycaster {
 		
 		gl.glUniform2f(rayLocs.getThreshLoc(), lowerCutoff, upperCutoff);
 		gl.glUniform3f(rayLocs.getColorLoc(), color[0], color[1],color[2]); //glUniform3f  (rayLocs.getColorLoc(),color);
+		//float[] camPos=theFrame.getCameraPosition();
+		//gl.glUniform3f(rayLocs.getCamPosLoc(), camPos[0], camPos[1],camPos[2]);
+		
 		//bind the two textures
 		gl.glEnable(GL3.GL_BLEND);
 		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
@@ -320,4 +324,6 @@ public class VolumeRaycaster {
 		FloatBuffer buffer=FloatBuffer.wrap(data);
 		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xDim, yDim,zDim,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
 	}
+	
+	public int getProgramID(){return this.raycastProgID;}
 }
