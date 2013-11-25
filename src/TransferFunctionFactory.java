@@ -24,6 +24,31 @@ public class TransferFunctionFactory {
 		
 	}
 	
+	public static TransferFunction getHead1(){
+		TransferFunction tfunc= new TransferFunction(1000);
+		
+
+		//tfunc.addRGBPegPoint(.298f, .447f,colorBegin.clone(),colorEnd.clone());
+		tfunc.addRGBPegPoint(0.5f, 0f, 0f, 0f);
+		tfunc.addAlphaPegPoint(.5f, 0f);
+		tfunc.addRGBPegPoint(0.52f, .6f, .4f, .4f);
+		tfunc.addRGBPegPoint(.511f, .6f, .4f, .4f);
+		
+		
+		tfunc.addAlphaPegPoint(.511f, .9f);
+		tfunc.addAlphaPegPoint(.67f, 0.9f);
+		tfunc.addAlphaPegPoint(.69f, 0.0f);
+		
+		//tfunc.addAlphaPegPoint(.24f, .1f);
+		//tfunc.addAlphaPegPoint(.313f, .0f);
+		//tfunc.addAlphaPegPoint(.321f, .3f);
+		//tfunc.addAlphaPegPoint(.99f, 1);
+
+		
+		return tfunc;
+		
+	}
+	
 	/*public static TransferFunction getEngine2(){
 		TransferFunction tfunc= new TransferFunction(1000);
 		

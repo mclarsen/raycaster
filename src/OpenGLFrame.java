@@ -116,7 +116,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	private boolean light1On=true;
     private LightAttributesLocs light1Locs;
   //value of global ambient light
-    private Vector3D globalAmbientLight= new Vector3D(.9f,.9f,.9f,1); 
+    private Vector3D globalAmbientLight= new Vector3D(.1f,.1f,.1f,1); 
     private int counter=0;
     //movement flags
     boolean onDown=false;
@@ -460,8 +460,13 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
+		theVolume.addTransferFuncton(TransferFunctionFactory.getHead1(), gl3);
 		
+		theVolume.nextTransferFunction();
+		
+		theVolume.rotate(0, 0, 90);
+		theVolume.rotate(0, 90, 0);
 		//theVolume.setScale(1f, 1f, .61f);
 		
 		//createTest Volume
@@ -471,9 +476,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		//engine
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false, this);
-		theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
-		theVolume.nextTransferFunction();
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false, this);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
+		//theVolume.nextTransferFunction();
 		//Orange
 //		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
 //		theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
@@ -821,7 +826,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		 light1.setSpecular(light1_specular);
 		 light1.setDiffuse(light1_diffuse);
 		 light1.setAmbient(light1_ambient);
-		 light1.setPosition( new Point3D(0,0,-10));
+		 light1.setPosition( new Point3D(0,2,0));
 		 theLight.translate(light1.getPosition().getX(), light1.getPosition().getY(), light1.getPosition().getZ());
 		 light1Locs= new LightAttributesLocs(gl, light1.getName(),theVolume.getProgramID());
 	}

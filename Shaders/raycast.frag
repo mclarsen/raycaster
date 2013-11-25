@@ -26,7 +26,7 @@ in vec4 varyingVert;
 out vec4 fragColor;                                                                  
 
 //all these params need eye space.
-vec4 getPhongColor(vec3 lightDir, vec3 vertex, vec3 normal){
+vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	vec4 phongColor= vec4(0,0,0,0);
 	vec4 lightAmb= light.ambient;
 	vec4 lightDiff= light.diffuse;
@@ -104,15 +104,15 @@ void main()
 		
 		sampleColor.rgba=texture(transferFunction,scalar).rgba;
 		
-		//deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
-		//deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
-		//deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
-		//vertexEyeSpace=invProjMat*vec4(currentPosition,1);
-		//lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz, vec3(deltaX,deltaY,deltaZ));
+		deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
+		deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
+		deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
+		vertexEyeSpace=invProjMat*vec4(currentPosition,1);
+		lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz, vec3(deltaX,deltaY,deltaZ));
 		
 		//sampleColor.a=scalar;
-		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb);
-		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb);
+		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb);
+		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb);
 		currentColor.a+=((1-currentColor.a)*sampleColor.a);   //make sure we don't take the full alpha
 		//if(sampleColor.a>.9) {
 		//	currentColor.a=1;

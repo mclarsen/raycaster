@@ -126,9 +126,9 @@ public class VolumeRaycaster {
 			float step=1/6.0f;
 			float current=0;
 			
-			defaultTransferFunction.addRGBPegPoint(0f, 0, 0, 0);
+			defaultTransferFunction.addRGBPegPoint(0.001f, 1, 0, 0);
 			defaultTransferFunction.addRGBPegPoint(1f, 1f, 1f, 1f);
-			defaultTransferFunction.addAlphaPegPoint(0f, 0f);
+			defaultTransferFunction.addAlphaPegPoint(0.001f, 0f);
 			defaultTransferFunction.addAlphaPegPoint(1f, 1f);
 			
 			//create the texutre
@@ -219,6 +219,9 @@ public class VolumeRaycaster {
 		volumeBox.scale(x, y, z);
 	}
 	
+	public void rotate(double x, double y, double z){
+		volumeBox.rotate(x, y, z);
+	}
 	public void setUpperCutoff(float c){
 		if (c>=0&&c<=1) this.upperCutoff=c;
 	}
