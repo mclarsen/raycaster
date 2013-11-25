@@ -14,7 +14,7 @@ public class RaycastLocs {
 	private int transferLoc=-1;
 	private int camPosLoc=-1;
 
-	
+	  
 	public  RaycastLocs(GL3 gl, int programID){
 		progID=programID;
 		mvLoc= gl.glGetUniformLocation(programID, "modelViewMatrix");

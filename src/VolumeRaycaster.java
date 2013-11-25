@@ -125,73 +125,12 @@ public class VolumeRaycaster {
 			defaultTransferFunction= new TransferFunction(1000);
 			float step=1/6.0f;
 			float current=0;
-			float[] colorBegin= new float[4];
-			float[] colorEnd= new float[4];
-			//red toOrange
-			colorBegin[0]=1.0f;
-			colorBegin[1]=0.0f;
-			colorBegin[2]=0.0f;
-			colorBegin[3]=current; //this should just set the alpha to scalars.
-			colorEnd[0]=1.0f;
-			colorEnd[1]=102/255.0f;
-			colorEnd[2]=0.0f;
-			colorEnd[3]=current+step;
-			defaultTransferFunction.addPegPoint(current,current+step,colorBegin.clone(),colorEnd.clone());
-			//orange to yellow
-			current+=step;
-			colorBegin[0]=1.0f;
-			colorBegin[1]=102/255.0f;
-			colorBegin[2]=0.0f;
-			colorBegin[3]=current; //this should just set the alpha to scalars.
-			colorEnd[0]=1.0f;
-			colorEnd[1]=1.0f;
-			colorEnd[2]=0.0f;
-			colorEnd[3]=current+step;
-			defaultTransferFunction.addPegPoint(current,current+step,colorBegin.clone(),colorEnd.clone());
-			//yellow to green
-			current+=step;
-			colorBegin[0]=1.0f;
-			colorBegin[1]=1.0f;
-			colorBegin[2]=0.0f;
-			colorBegin[3]=current; //this should just set the alpha to scalars.
-			colorEnd[0]=0.0f;
-			colorEnd[1]=1.0f;
-			colorEnd[2]=0.0f;
-			colorEnd[3]=current+step;
-			defaultTransferFunction.addPegPoint(current,current+step,colorBegin.clone(),colorEnd.clone());
-			//green to blue
-			current+=step;
-			colorBegin[0]=0.0f;
-			colorBegin[1]=1.0f;
-			colorBegin[2]=0.0f;
-			colorBegin[3]=current; //this should just set the alpha to scalars.
-			colorEnd[0]=0.0f;
-			colorEnd[1]=0.0f;
-			colorEnd[2]=1.0f;
-			colorEnd[3]=current+step;
-			defaultTransferFunction.addPegPoint(current,current+step,colorBegin.clone(),colorEnd.clone());
-			//blue to indigo
-			current+=step;
-			colorBegin[0]=0.0f;
-			colorBegin[1]=1.0f;
-			colorBegin[2]=0.0f;
-			colorBegin[3]=current; //this should just set the alpha to scalars.
-			colorEnd[0]=111/255.0f;
-			colorEnd[1]=0.0f;
-			colorEnd[2]=1.0f;
-			colorEnd[3]=current+step;
-			defaultTransferFunction.addPegPoint(current,current+step,colorBegin.clone(),colorEnd.clone());
-			//indigo to violet
-			current+=step;
-			colorBegin[0]=111/255.0f;
-			colorBegin[1]=0.0f;
-			colorBegin[2]=1.0f;
-			colorBegin[3]=current; //this should just set the alpha to scalars.
-			colorEnd[0]=143/255.0f;
-			colorEnd[1]=0.0f;
-			colorEnd[2]=1.0f;
-			colorEnd[3]=current+step;
-			defaultTransferFunction.addPegPoint(current,current+step,colorBegin.clone(),colorEnd.clone());
+			
+			defaultTransferFunction.addRGBPegPoint(0f, 0, 0, 0);
+			defaultTransferFunction.addRGBPegPoint(1f, 1f, 1f, 1f);
+			defaultTransferFunction.addAlphaPegPoint(0f, 0f);
+			defaultTransferFunction.addAlphaPegPoint(1f, 1f);
+			
 			//create the texutre
 			float [] tData= defaultTransferFunction.getTransferArray();
 			//System.out.println(tData.length);
@@ -232,7 +171,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		//volumeBox.rotate(0, .1,0);
+		volumeBox.rotate(0, .1,0);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);

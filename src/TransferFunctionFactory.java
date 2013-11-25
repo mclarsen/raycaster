@@ -4,32 +4,27 @@ public class TransferFunctionFactory {
 	public static TransferFunction getEngine1(){
 		TransferFunction tfunc= new TransferFunction(1000);
 		
-		float[] colorBegin= new float[4];
-		float[] colorEnd= new float[4];
-		colorBegin[0]=1.0f;
-		colorBegin[1]=0.0f;
-		colorBegin[2]=0.0f;
-		colorBegin[3]=.3f; 
-		colorEnd[0]=0.0f;
-		colorEnd[1]=0f;
-		colorEnd[2]=0.0f;
-		colorEnd[3]=.2f;
-		tfunc.addPegPoint(.298f, .447f,colorBegin.clone(),colorEnd.clone());
-		colorBegin[0]=0.0f;
-		colorBegin[1]=0.0f;
-		colorBegin[2]=1.0f;
-		colorBegin[3]=.5f; 
-		colorEnd[0]=0.0f;
-		colorEnd[1]=0.0f;
-		colorEnd[2]=1.0f;
-		colorEnd[3]=.5f;
-		tfunc.addPegPoint(.67f, .766f,colorBegin.clone(),colorEnd.clone());
+
+		//tfunc.addRGBPegPoint(.298f, .447f,colorBegin.clone(),colorEnd.clone());
+		tfunc.addRGBPegPoint(.298f, .5f, 0, 0f);
+		tfunc.addRGBPegPoint(.447f, 1f, 0, 0f);
+		tfunc.addRGBPegPoint(.5f, 0f, 0, 0f);
+		tfunc.addRGBPegPoint(.66f, 0f, 0, 0f);
+		tfunc.addRGBPegPoint(.67f, .6f, .6f, .6f);
+		tfunc.addRGBPegPoint(.766f, 1f, 1f, 1f);
+		tfunc.addAlphaPegPoint(.24f, 0f);
+		tfunc.addAlphaPegPoint(.298f, .6f);
+		tfunc.addAlphaPegPoint(.447f, .6f);
+		tfunc.addAlphaPegPoint(.448f, .2f);
+		tfunc.addAlphaPegPoint(.67f, .4f);
+		tfunc.addAlphaPegPoint(.698f, 0);
+
 		
 		return tfunc;
 		
 	}
 	
-	public static TransferFunction getEngine2(){
+	/*public static TransferFunction getEngine2(){
 		TransferFunction tfunc= new TransferFunction(1000);
 		
 		float[] colorBegin= new float[4];
@@ -82,5 +77,5 @@ public class TransferFunctionFactory {
 		
 		return tfunc;
 		
-	}
+	}*/
 }

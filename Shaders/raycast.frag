@@ -34,7 +34,7 @@ vec4 getPhongColor(vec3 lightDir, vec3 vertex, vec3 normal){
 	
 	vec4 matAmb=vec4(.5,.5,.5,1);
 	vec4 matDiff=vec4(.5,.5,.5,1);
-	vec4 matSpec=vec4(.5,.5,.5,1);
+	vec4 matSpec=vec4(.9,.9,.9,1);
 	float matShininess=.4;
 	
 	//compute normailized lights, normal, and eye dir vecs
@@ -73,6 +73,7 @@ void main()
 	vec3 rayDir=outLoc.xyz-varyingColor.xyz;
 	
 	float rayLength=length(rayDir.xyz);
+	
 	rayDir=normalize(rayDir);
 	
 	vec3 rayStep=step*rayDir;
@@ -103,20 +104,20 @@ void main()
 		
 		sampleColor.rgba=texture(transferFunction,scalar).rgba;
 		
-		deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
-		deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
-		deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
-		vertexEyeSpace=invProjMat*vec4(currentPosition,1);
-		lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz, vec3(deltaX,deltaY,deltaZ));
+		//deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
+		//deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
+		//deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
+		//vertexEyeSpace=invProjMat*vec4(currentPosition,1);
+		//lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz, vec3(deltaX,deltaY,deltaZ));
 		
 		//sampleColor.a=scalar;
-		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a*lightColor.rgb)*3;
-		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a)*3;
-		currentColor.a+=((1-currentColor.a)*sampleColor.a)*step*25;   //make sure we don't take the full alpha
-		if(sampleColor.a>.9) {
-			currentColor.a=1;
-			break;
-		}
+		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb);
+		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb);
+		currentColor.a+=((1-currentColor.a)*sampleColor.a);   //make sure we don't take the full alpha
+		//if(sampleColor.a>.9) {
+		//	currentColor.a=1;
+		//	break;
+		//}
 		//advance then check for termination
 		currentPosition+=rayStep;
 		currentLength+=stepLength;
