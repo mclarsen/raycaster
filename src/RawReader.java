@@ -12,7 +12,7 @@ public class RawReader {
 
 	
 	public static float[] ReadRaw(int bitSize, int xDim, int yDim, int zDim, String filename, boolean isBigEndian){
-		float[] data= new float[xDim*xDim*xDim];
+		float[] data= new float[xDim*yDim*zDim];
 		File file = new File(filename);
 		System.out.println("FileSize : " +file.length());
 		

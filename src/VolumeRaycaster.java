@@ -195,6 +195,12 @@ public class VolumeRaycaster {
 		//float[] camPos=theFrame.getCameraPosition();
 		//gl.glUniform3f(rayLocs.getCamPosLoc(), camPos[0], camPos[1],camPos[2]);
 		
+		Matrix3D normMat=GeometryTransformPipeline.getNormalMatrix(true);		//get the normal matrix
+		double[] normVals= normMat.getValues();
+		float[] normValsFloat= new float[normVals.length];
+		for(int i=0; i< normVals.length;i++) normValsFloat[i]= (float) normVals[i];
+		gl.glUniformMatrix4fv(rayLocs.getNormalMatLoc(), 1,false, normValsFloat,0);
+		
 		//bind the two textures
 		gl.glEnable(GL3.GL_BLEND);
 		gl.glBlendFunc(GL3.GL_SRC_ALPHA, GL3.GL_ONE_MINUS_SRC_ALPHA);
@@ -237,22 +243,77 @@ public class VolumeRaycaster {
 	}
 	
 	public float[] getColor(){return color;}
+	
 	private void loadVolume(GL3 gl){
-
-		float data[] = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
-		for(int i=0;i<data.length;i++){
-			if (data[i]>scalarMax) scalarMax=data[i];
-			if(data[i]<scalarMin) scalarMin=data[i];
+		int[] testDims={3,3,3};
+		System.out.println(getLogicalPointIndex(13,testDims)[0]+" "+getLogicalPointIndex(13,testDims)[1]+" "+getLogicalPointIndex(13,testDims)[2]);
+		System.out.println(this.getPointIndex(1, 1, 1, testDims));
+		float scalars[] = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
+		float[] data= new float[scalars.length*4]; //storing normal vectors.
+		int[] dims={xDim,yDim,zDim};
+		
+		for(int i=0;i<scalars.length;i++){
+			if (scalars[i]>scalarMax) scalarMax=scalars[i];
+			if(scalars[i]<scalarMin) scalarMin=scalars[i];
 		}
 		//scale the data to eliminate un-used values
 		if(autoScale){
 			
-			for(int i=0;i<data.length;i++){
-				data[i]=data[i]/scalarMax;
+			for(int i=0;i<scalars.length;i++){
+				scalars[i]=scalars[i]/scalarMax;
 			}
 				//if (data[i]>scalarMax) scalarMax=data[i];
 				//if(data[i]<scalarMin) scalarMin=data[i];
+		}
+		
+		for(int i=0;i<scalars.length;i++){
+			data[i*4]=scalars[i];
+			int [] point=getLogicalPointIndex(i, dims);
+			//System.out.println(getLogicalPointIndex(7405568, dims)[2]);
+			//System.out.println(scalars.length);
+			float deltaX,deltaY,deltaZ = 0;
 			
+			if(point[0]==0){
+				deltaX=scalars[getPointIndex(point[0]+1,point[1],point[2],dims)]-scalars[i];
+			}
+			else if(point[0]==dims[0]-1){
+				deltaX=scalars[i]-scalars[getPointIndex(point[0]-1,point[1],point[2],dims)];
+			}
+			else{
+				deltaX=(scalars[getPointIndex(point[0]+1,point[1],point[2],dims)]-scalars[getPointIndex(point[0]+1,point[1],point[2],dims)])/2.0f;
+			}
+			
+			
+			if(point[1]==0){
+				deltaY=scalars[getPointIndex(point[0],point[1]+1,point[2],dims)]-scalars[i];
+			}
+			else if(point[1]==dims[1]-1){
+				deltaY=scalars[i]-scalars[getPointIndex(point[0],point[1]-1,point[2],dims)];
+			}
+			else{
+				deltaY=(scalars[getPointIndex(point[0],point[1]+1,point[2],dims)]-scalars[getPointIndex(point[0],point[1]-1,point[2],dims)])/2.0f;
+			}
+			
+			if(point[2]==0){
+				deltaZ=scalars[getPointIndex(point[0],point[1],point[2]+1,dims)]-scalars[i];
+			}
+			else if(point[2]==dims[2]-1){
+				deltaZ=scalars[i]-scalars[getPointIndex(point[0],point[1],point[2]-1,dims)];
+			}
+			else{
+				try{
+				deltaZ=(scalars[getPointIndex(point[0],point[1],point[2]+1,dims)]-scalars[getPointIndex(point[0],point[1],point[2]-1,dims)])/2.0f;
+				}
+				catch (ArrayIndexOutOfBoundsException e){
+					System.out.println(" "+point[0]+" "+point[1]+" "+point[2]);
+				}
+			}
+			//float len=(float) Math.sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
+			data[i*4+1]=deltaX;
+			data[i*4+2]=deltaY;
+			data[i*4+3]=deltaZ;
+			
+
 		}
 		System.out.println("Scalars  : "+scalarMin+" - "+scalarMax);
 		gl.glGenTextures(1, volumeTextureID,0);
@@ -264,8 +325,22 @@ public class VolumeRaycaster {
 		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
 		gl.glTexParameteri(GL3.GL_TEXTURE_3D, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);
 		FloatBuffer buffer=FloatBuffer.wrap(data);
-		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RED, xDim, yDim,zDim,0, GL3.GL_RED,GL3.GL_FLOAT,buffer);
+		gl.glTexImage3D(GL3.GL_TEXTURE_3D, 0,GL3.GL_RGBA, xDim, yDim,zDim,0, GL3.GL_RGBA,GL3.GL_FLOAT,buffer);
 	}
 	
 	public int getProgramID(){return this.raycastProgID;}
+	
+	private int getPointIndex(int x, int y, int z, int[] dims){
+		return z*(dims[0])*(dims[1])+y*(dims[0])+x;
+	}
+	
+	private int[] getLogicalPointIndex(int indx, int[] dims){
+		
+		int[] xyz={0,0,0};
+		xyz[0]=indx%dims[0];
+		xyz[1]=(indx/dims[0])%dims[1];
+		xyz[2]=indx/(dims[0]*dims[1]);
+		return xyz;
+	}
+	
 }

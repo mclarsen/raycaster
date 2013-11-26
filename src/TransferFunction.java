@@ -53,7 +53,7 @@ public  class TransferFunction  {
 	private float lerp(float cBegin, float pCurrent, float pB,float pE, float cEnd)
 	{
 		
-		return cBegin+((pCurrent-pB)/(pE-pB)*(cEnd-cBegin));
+		return cBegin+((pCurrent-pB)/(pE-pB))*(cEnd-cBegin);
 	}
 	
 	public  float [] getTransferArray() {
@@ -69,7 +69,6 @@ public  class TransferFunction  {
 		float currentAlphaScalar=0;
 		int currentAlphaPeg=0;
 		float currentStep=0;
-		boolean noMorePegs=false;
 		for(int i=0; i<resolution;i++)
 		{
 			
@@ -94,12 +93,17 @@ public  class TransferFunction  {
 				data[i*4+2]=0;
 			}
 			else{
+				
 				data[i*4]=lerp(currentColor[0] , currentStep , currentColorScalar ,rgbPegs.get(currentRGBPeg).scalar, rgbPegs.get(currentRGBPeg).color[0]);
 				data[i*4+1]=lerp(currentColor[1] , currentStep , currentColorScalar ,rgbPegs.get(currentRGBPeg).scalar, rgbPegs.get(currentRGBPeg).color[1]);
 				data[i*4+2]=lerp(currentColor[2] , currentStep , currentColorScalar ,rgbPegs.get(currentRGBPeg).scalar, rgbPegs.get(currentRGBPeg).color[2]);
+				if(data[i*4]>1) {
+					System.out.println(currentColor[0] +" "+ currentStep +" "+ currentColorScalar +" "+rgbPegs.get(currentRGBPeg).scalar+" "+ rgbPegs.get(currentRGBPeg).color[0]);
+					System.out.println(data[i*4]);
+				}
 			}
 			if(currentAlphaPeg==alphaPegs.size()){
-				data[i*4+4]=0;
+				data[i*4+3]=0;
 			}
 			else
 				data[i*4+3]=lerp(currentAlpha , currentStep , currentAlphaScalar ,alphaPegs.get(currentAlphaPeg).scalar, alphaPegs.get(currentAlphaPeg).alpha);

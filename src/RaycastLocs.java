@@ -13,6 +13,7 @@ public class RaycastLocs {
 	private int colorLoc=-1;
 	private int transferLoc=-1;
 	private int camPosLoc=-1;
+	private int normalMatLoc=-1;
 
 	  
 	public  RaycastLocs(GL3 gl, int programID){
@@ -25,9 +26,10 @@ public class RaycastLocs {
 		colorLoc=gl.glGetUniformLocation(programID, "color");
 		transferLoc=gl.glGetUniformLocation(programID, "transferFunction");
 		camPosLoc=gl.glGetUniformLocation(programID, "camPos");
+		normalMatLoc=gl.glGetUniformLocation(programID, "normalMat");
 		
 		if ( mvLoc==-1 || volume==-1 || stepSize==-1 ||backFaceMap==-1
-				|| projMat==-1 ||threshLoc==-1||colorLoc==-1 ||transferLoc==-1||camPosLoc==-1){
+				|| projMat==-1 ||threshLoc==-1||colorLoc==-1 ||transferLoc==-1||camPosLoc==-1|| normalMatLoc==-1){
 			System.out.println("Error getting RayCasgting locs");
 			System.out.println("mvLoc "+ mvLoc);
 			System.out.println("volume "+ volume);
@@ -38,7 +40,7 @@ public class RaycastLocs {
 			System.out.println("colorLoc"+ colorLoc);
 			System.out.println("transferLoc"+ transferLoc);
 			System.out.println("camPosLoc"+ camPosLoc);
-
+			System.out.println("normalMatLoc"+ normalMatLoc);
 
 		}
 	}
@@ -53,7 +55,7 @@ public class RaycastLocs {
 	public  int getColorLoc(){return colorLoc;}
 	public 	int getTransferLoc(){return transferLoc;}
 	public 	int getCamPosLoc(){return camPosLoc;}
-
+	public 	int getNormalMatLoc(){return normalMatLoc;}
 
 
 }

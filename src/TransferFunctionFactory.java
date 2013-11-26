@@ -31,13 +31,21 @@ public class TransferFunctionFactory {
 		//tfunc.addRGBPegPoint(.298f, .447f,colorBegin.clone(),colorEnd.clone());
 		tfunc.addRGBPegPoint(0.5f, 0f, 0f, 0f);
 		tfunc.addAlphaPegPoint(.5f, 0f);
-		tfunc.addRGBPegPoint(0.52f, .6f, .4f, .4f);
-		tfunc.addRGBPegPoint(.511f, .6f, .4f, .4f);
+		
+		tfunc.addRGBPegPoint(.511f, .1f, .1f, .1f);
+		tfunc.addRGBPegPoint(0.52f, 1f, .1f, .1f);
+		
+		tfunc.addAlphaPegPoint(.23f, 0f);
+		tfunc.addAlphaPegPoint(.256f, .0f);
+		tfunc.addRGBPegPoint(0.256f, .6f, .4f, .4f);
+		tfunc.addRGBPegPoint(.3f, .6f, .4f, .4f);
+		tfunc.addAlphaPegPoint(.3f, .0f);
+		tfunc.addAlphaPegPoint(.33f, 0f);
 		
 		
 		tfunc.addAlphaPegPoint(.511f, .9f);
-		tfunc.addAlphaPegPoint(.67f, 0.9f);
-		tfunc.addAlphaPegPoint(.69f, 0.0f);
+		tfunc.addAlphaPegPoint(.52f, 0.9f);
+		tfunc.addAlphaPegPoint(.58f, 0.0f);
 		
 		//tfunc.addAlphaPegPoint(.24f, .1f);
 		//tfunc.addAlphaPegPoint(.313f, .0f);
