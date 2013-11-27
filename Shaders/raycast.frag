@@ -34,10 +34,10 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	vec4 lightDiff= light.diffuse;
 	vec4 lightSpec= light.specular;
 	
-	vec4 matAmb=vec4(.5,.5,.5,1);
-	vec4 matDiff=vec4(.5,.5,.5,1);
-	vec4 matSpec=vec4(.9,.9,.9,1);
-	float matShininess=.7;
+	vec4 matAmb=vec4(.3,.3,.3,1);
+	vec4 matDiff=vec4(.3,.3,.3,1);
+	vec4 matSpec=vec4(.3,.3,.3,1);
+	float matShininess=.2;
 	
 	//compute normailized lights, normal, and eye dir vecs
 	vec3 L = normalize(lightDir);
@@ -54,7 +54,7 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	float cosPhi = dot (V,R);
 	
 	//compute reflected color
-	phongColor= globalAmbient * matAmb + lightAmb*matAmb
+	phongColor= .4 * matAmb + lightAmb*matAmb
 			 	+ lightDiff * matDiff * max( cosTheta, 0.0 )
 			 	+ lightSpec*matSpec * pow ( max(cosPhi, 0.0), matShininess); 
 	//phongColor=lightDiff * matDiff * max( cosTheta, 0.0 );
@@ -62,6 +62,9 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	return phongColor;
 }
 
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
 
 void main()                                                                         
 {   float step=.002;
@@ -82,7 +85,8 @@ void main()
 
 	float stepLength=length(rayStep);
 	vec3 currentPosition=varyingColor.xyz;
-
+	vec3 dither= vec3(rand(varyingColor.xy),rand(varyingColor.zy),rand(varyingColor.xz));
+	//currentPosition+=rayStep*dither;
 	float currentLength=0;
 	vec4 currentColor=vec4(0,0,0,0);
 	vec4 sampleColor= vec4(0,0,0,0);
@@ -109,6 +113,7 @@ void main()
 		
 		sampleColor.rgba=texture(transferFunction,scalar).rgba;
 		
+		if(sampleColor.a>.05){
 		deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
 		deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
 		deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
@@ -116,18 +121,15 @@ void main()
 	
 		lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz,(modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz );//(modelViewMatrix*vec4(lookUp.gba,0)).xyz    (normalMat*vec4(lookUp.gba,1)).xyz  lookUp.gba  (modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz
 		
-		//sampleColor.a=scalar;
-		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb);
-		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb);
-		currentColor.a+=((1-currentColor.a)*sampleColor.a);   //make sure we don't take the full alpha
-		//if(sampleColor.a>.9) {
-		//	currentColor.a=1;
-		//	break;
-		//}
+		sampleColor.a=1-pow((1-sampleColor.a),.002/.001);
+		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb*sampleColor.a);
+		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a);
+		currentColor.a+=((1-currentColor.a)*sampleColor.a);//   //make sure we don't take the full alpha
+		}
 		//advance then check for termination
 		currentPosition+=rayStep;
 		currentLength+=stepLength;
-		if(currentLength>=rayLength ||sampleColor.a>=1){
+		if(currentLength>=rayLength ||sampleColor.a>=.95){
 			break;
 		}
 		

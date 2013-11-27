@@ -126,10 +126,10 @@ public class VolumeRaycaster {
 			float step=1/6.0f;
 			float current=0;
 			
-			defaultTransferFunction.addRGBPegPoint(0.001f, 1, 0, 0);
-			defaultTransferFunction.addRGBPegPoint(1f, 1f, 1f, 1f);
+			defaultTransferFunction.addRGBPegPoint(0.001f, 255, 0, 0);
+			defaultTransferFunction.addRGBPegPoint(.99f, 1f, 1f, 1f);
 			defaultTransferFunction.addAlphaPegPoint(0.001f, 0f);
-			defaultTransferFunction.addAlphaPegPoint(1f, 1f);
+			defaultTransferFunction.addAlphaPegPoint(.99f, 1f);
 			
 			//create the texutre
 			float [] tData= defaultTransferFunction.getTransferArray();
@@ -171,7 +171,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		volumeBox.rotate(0, .1,0);
+		volumeBox.rotate(0, 0,.05);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -249,9 +249,10 @@ public class VolumeRaycaster {
 		System.out.println(getLogicalPointIndex(13,testDims)[0]+" "+getLogicalPointIndex(13,testDims)[1]+" "+getLogicalPointIndex(13,testDims)[2]);
 		System.out.println(this.getPointIndex(1, 1, 1, testDims));
 		float scalars[] = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
+		//{0,0,0,  0,1f,0,  0,0,0,  0,2f,0, 2f,1.5f,1f, 0,3f,0, 0,0,0, 0,2f,0, 0,0,0};
 		float[] data= new float[scalars.length*4]; //storing normal vectors.
 		int[] dims={xDim,yDim,zDim};
-		
+		//int [] dims= {3,3,3};
 		for(int i=0;i<scalars.length;i++){
 			if (scalars[i]>scalarMax) scalarMax=scalars[i];
 			if(scalars[i]<scalarMin) scalarMin=scalars[i];
@@ -280,7 +281,12 @@ public class VolumeRaycaster {
 				deltaX=scalars[i]-scalars[getPointIndex(point[0]-1,point[1],point[2],dims)];
 			}
 			else{
-				deltaX=(scalars[getPointIndex(point[0]+1,point[1],point[2],dims)]-scalars[getPointIndex(point[0]+1,point[1],point[2],dims)])/2.0f;
+				//if(1==13){
+					//System.out.println(getPointIndex(point[0]+1,point[1],point[2],dims));
+					//System.out.println(scalars[getPointIndex(point[0]+1,point[1],point[2],dims)]);
+					//System.out.println(getPointIndex(point[0]+1,point[1],point[2],dims));
+				//}
+				deltaX=(scalars[getPointIndex(point[0]+1,point[1],point[2],dims)]-scalars[getPointIndex(point[0]-1,point[1],point[2],dims)])/2.0f;
 			}
 			
 			
@@ -315,6 +321,7 @@ public class VolumeRaycaster {
 			
 
 		}
+		System.out.println(getPointIndex(1, 1, 1, dims));
 		System.out.println("Scalars  : "+scalarMin+" - "+scalarMax);
 		gl.glGenTextures(1, volumeTextureID,0);
 		gl.glBindTexture(GL3.GL_TEXTURE_3D, volumeTextureID[0]);

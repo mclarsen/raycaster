@@ -400,6 +400,9 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		//ps.draw(gl, myCamera.getLocation(), myCamera.getUpAxis());
 		
 		errorCheck(gl,"display");												//check for errors in display
+		
+		
+		
 	}
 
 	
@@ -461,7 +464,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
-		theVolume.addTransferFuncton(TransferFunctionFactory.getHead1(), gl3);
+		theVolume.addTransferFuncton(TransferFunctionFactory.getHead2(), gl3);
 		
 		theVolume.nextTransferFunction();
 		
@@ -480,11 +483,17 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
 		//theVolume.nextTransferFunction();
 		//Orange
-//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
-//		theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
-//		theVolume.nextTransferFunction();
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
+		//theVolume.nextTransferFunction();
 		
 		initLights(gl3);
+		
+		//TransferFunction tester= new TransferFunction(10);
+//		tester.addRGBPegPoint(.1f, 1f, 1f, 1f);
+//		tester.addAlphaPegPoint(.5f,1f);
+//		tester.addAlphaPegPoint(.7f,0f);
+//		float [] t=tester.getTransferArray();
 	}
 	
 	

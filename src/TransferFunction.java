@@ -46,6 +46,10 @@ public  class TransferFunction  {
 		rgbPegs.add(new rgbPegPoint( scalar,   r,  g,  b));
 	}
 	
+	public void addRGBPegPoint(float scalar,  int r, int g, int b){
+		rgbPegs.add(new rgbPegPoint( scalar,   r/255.0f,  g/255.0f,  b/255.0f));
+	}
+	
 	public void addAlphaPegPoint(float scalar,  float a){
 		alphaPegs.add(new alphaPegPoint( scalar,   a));
 	}
@@ -73,7 +77,7 @@ public  class TransferFunction  {
 		{
 			
 			
-			if(rgbPegs.get(currentRGBPeg).scalar<currentStep )
+			if(rgbPegs.get(currentRGBPeg).scalar<currentStep || i==0)
 			{
 				currentColorScalar=rgbPegs.get(currentRGBPeg).scalar;
 				currentColor[0]=rgbPegs.get(currentRGBPeg).color[0];
@@ -81,7 +85,7 @@ public  class TransferFunction  {
 				currentColor[2]=rgbPegs.get(currentRGBPeg).color[2];
 				currentRGBPeg++;
 			}
-			if(alphaPegs.get(currentAlphaPeg).scalar<currentStep )
+			if(alphaPegs.get(currentAlphaPeg).scalar<currentStep || i==0)
 			{
 				currentAlphaScalar=alphaPegs.get(currentAlphaPeg).scalar;
 				currentAlpha=alphaPegs.get(currentAlphaPeg).alpha;
