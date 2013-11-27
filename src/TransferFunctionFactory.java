@@ -13,11 +13,39 @@ public class TransferFunctionFactory {
 		tfunc.addRGBPegPoint(.67f, 1f, 1f, 1f);
 		tfunc.addRGBPegPoint(.766f, 1f, 1f, 1f);
 		tfunc.addAlphaPegPoint(.24f, 0f);
-		tfunc.addAlphaPegPoint(.298f, .3f);
-		tfunc.addAlphaPegPoint(.447f, .3f);
-		tfunc.addAlphaPegPoint(.448f, .2f);
-		tfunc.addAlphaPegPoint(.67f, .4f);
-		tfunc.addAlphaPegPoint(.698f, 0);
+		tfunc.addAlphaPegPoint(.298f, .05f);
+		tfunc.addAlphaPegPoint(.462f, .05f);
+		tfunc.addAlphaPegPoint(.469f, 0f);
+		
+		
+		tfunc.addAlphaPegPoint(.671f, 0f);
+		tfunc.addAlphaPegPoint(.672f, 1f);
+		tfunc.addAlphaPegPoint(.99f, 1f);
+		//tfunc.addAlphaPegPoint(.99f, 0);
+
+		
+		return tfunc;
+		
+	}
+	
+	public static TransferFunction getEngine2(){
+		TransferFunction tfunc= new TransferFunction(1000);
+		
+
+		//tfunc.addRGBPegPoint(.298f, .447f,colorBegin.clone(),colorEnd.clone());
+		tfunc.addRGBPegPoint(.17f, 0f, 0, 0f);
+		tfunc.addRGBPegPoint(.176f, 1f, 0, 0f);
+		tfunc.addRGBPegPoint(.4f, 1f, 0, 0f);
+		tfunc.addRGBPegPoint(.99f, 1f, 0, 0f);
+
+
+		tfunc.addAlphaPegPoint(.17f, 0f);
+		tfunc.addAlphaPegPoint(.176f, 1f);
+		tfunc.addAlphaPegPoint(.4f, 1f);
+		tfunc.addAlphaPegPoint(.5f, 0f);
+		
+		
+		
 
 		
 		return tfunc;
