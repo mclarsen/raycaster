@@ -160,7 +160,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 
 		this.setLayout(new BorderLayout());                    //JFrame Setup
 		setTitle("RayCast Demo");
-		setSize(1000,750);
+		setSize(800,600);
 		setLocation(200,200);
 		
 		int input_MapName = JComponent.WHEN_IN_FOCUSED_WINDOW; // Key Binding setup

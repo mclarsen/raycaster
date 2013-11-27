@@ -83,8 +83,8 @@ public class TransferFunctionFactory {
 		
 		
 		tfunc.addAlphaPegPoint(.511f, .9f);
-		tfunc.addAlphaPegPoint(.54f, 1f);
-		tfunc.addAlphaPegPoint(.58f, 0.0f);
+		tfunc.addAlphaPegPoint(.57f, 1f);
+		tfunc.addAlphaPegPoint(.8f, 0.0f);
 		
 		//tfunc.addAlphaPegPoint(.24f, .1f);
 		//tfunc.addAlphaPegPoint(.313f, .0f);

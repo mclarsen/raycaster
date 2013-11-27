@@ -35,7 +35,7 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	vec4 lightSpec= light.specular;
 	
 	vec4 matAmb=vec4(.3,.3,.3,1);
-	vec4 matDiff=vec4(.3,.3,.3,1);
+	vec4 matDiff=vec4(.5,.5,.5,1);
 	vec4 matSpec=vec4(.3,.3,.3,1);
 	float matShininess=.2;
 	
@@ -52,9 +52,9 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	
 	//compute angle between the vector to the eye and reflected light dir
 	float cosPhi = dot (V,R);
-	
+	 vec4 emission=vec4(.1,.1,.1,1);
 	//compute reflected color
-	phongColor= .4 * matAmb + lightAmb*matAmb
+	phongColor=  emission+ .2 * matAmb + lightAmb*matAmb
 			 	+ lightDiff * matDiff * max( cosTheta, 0.0 )
 			 	+ lightSpec*matSpec * pow ( max(cosPhi, 0.0), matShininess); 
 	//phongColor=lightDiff * matDiff * max( cosTheta, 0.0 );
@@ -68,8 +68,8 @@ float rand(vec2 co){
 
 void main()                                                                         
 {   float step=.002;
-
-	
+	vec3 dither= vec3(rand(varyingColor.xy),rand(varyingColor.zy),rand(varyingColor.xz));
+	//step+=rand(varyingColor.xy)/10000;
 	mat4 invProjMat= inverse(projMatrix);
 	
 	//calculate the geometry
@@ -78,14 +78,14 @@ void main()
 	vec3 rayDir=outLoc.xyz-varyingColor.xyz;
 	
 	float rayLength=length(rayDir.xyz);
-	
+
 	rayDir=normalize(rayDir);
-	
+	//rayDir+=dither;
 	vec3 rayStep=step*rayDir;
 
 	float stepLength=length(rayStep);
 	vec3 currentPosition=varyingColor.xyz;
-	vec3 dither= vec3(rand(varyingColor.xy),rand(varyingColor.zy),rand(varyingColor.xz));
+	
 	//currentPosition+=rayStep*dither;
 	float currentLength=0;
 	vec4 currentColor=vec4(0,0,0,0);
@@ -129,7 +129,7 @@ void main()
 		//advance then check for termination
 		currentPosition+=rayStep;
 		currentLength+=stepLength;
-		if(currentLength>=rayLength ||sampleColor.a>=.95){
+		if(currentLength>=rayLength ||currentColor.a>=.9){
 			break;
 		}
 		

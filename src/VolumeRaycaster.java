@@ -171,7 +171,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		volumeBox.rotate(0, 0,.05);
+		volumeBox.rotate(0, 0,.1);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -314,10 +314,10 @@ public class VolumeRaycaster {
 					System.out.println(" "+point[0]+" "+point[1]+" "+point[2]);
 				}
 			}
-			//float len=(float) Math.sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
-			data[i*4+1]=deltaX;
-			data[i*4+2]=deltaY;
-			data[i*4+3]=deltaZ;
+			float len=(float) Math.sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
+			data[i*4+1]=deltaX/len;
+			data[i*4+2]=deltaY/len;
+			data[i*4+3]=deltaZ/len;
 			
 
 		}
