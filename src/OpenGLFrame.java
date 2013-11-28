@@ -467,7 +467,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
 		theVolume.addTransferFuncton(TransferFunctionFactory.getHead2(), gl3);
 		
-		//theVolume.nextTransferFunction();
+		theVolume.nextTransferFunction();
 		
 		theVolume.rotate(0, 0, 90);
 		theVolume.rotate(0, 90, 0);

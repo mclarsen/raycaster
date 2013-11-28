@@ -126,7 +126,7 @@ public class VolumeRaycaster {
 			float step=1/6.0f;
 			float current=0;
 			
-			defaultTransferFunction.addRGBPegPoint(0.001f, 255, 0, 0);
+			defaultTransferFunction.addRGBPegPoint(0.001f, .8f, .8f, .8f);
 			defaultTransferFunction.addRGBPegPoint(.99f, 1f, 1f, 1f);
 			defaultTransferFunction.addAlphaPegPoint(0.001f, 0f);
 			defaultTransferFunction.addAlphaPegPoint(.99f, 1f);
