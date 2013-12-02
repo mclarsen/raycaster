@@ -160,7 +160,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 
 		this.setLayout(new BorderLayout());                    //JFrame Setup
 		setTitle("RayCast Demo");
-		setSize(1200,1000);
+		setSize(800,600);
 		setLocation(200,200);
 		
 		int input_MapName = JComponent.WHEN_IN_FOCUSED_WINDOW; // Key Binding setup
@@ -464,13 +464,13 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
-		theVolume.addTransferFuncton(TransferFunctionFactory.getHead2(), gl3);
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getHead2(), gl3);
 		
-		theVolume.nextTransferFunction();
+		//theVolume.nextTransferFunction();
 		
-		theVolume.rotate(0, 0, 90);
-		theVolume.rotate(0, 90, 0);
+		//theVolume.rotate(0, 0, 90);
+		//theVolume.rotate(0, 90, 0);
 		//theVolume.setScale(1f, 1f, .61f);
 		
 		//createTest Volume
@@ -481,12 +481,12 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		//engine
 		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false, this);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine2(), gl3);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
 		//theVolume.nextTransferFunction();
 		//Orange
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
-		//theVolume.nextTransferFunction();
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
+		theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
+		theVolume.nextTransferFunction();
 		
 		initLights(gl3);
 		

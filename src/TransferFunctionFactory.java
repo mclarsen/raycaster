@@ -97,20 +97,32 @@ public class TransferFunctionFactory {
 		tfunc.addAlphaPegPoint(.5f, 0f);
 		
 		
-		tfunc.addRGBPegPoint(0.01f, 221, 200, 100);
+		tfunc.addRGBPegPoint(0.01f, 221, 200, 100);//234, 221,161
 		tfunc.addRGBPegPoint(0.7f, 255, 255, 255);
 		
+		tfunc.addRGBPegPoint(0.284f, 234, 221, 161);
+		tfunc.addRGBPegPoint(0.285f, 234, 0, 0);
+		//tfunc.addRGBPegPoint(0.297f, 234, 0, 0);
+		//tfunc.addRGBPegPoint(0.298f, 234, 221, 161);
+		tfunc.addRGBPegPoint(0.332f, 234, 0, 0); //test
+		tfunc.addRGBPegPoint(0.334f, 234, 221, 161);
+		// 285-29 red
+		tfunc.addAlphaPegPoint(.284f, .050f);
+		tfunc.addAlphaPegPoint(.285f, .07f);
 		
+		tfunc.addAlphaPegPoint(.297f, .07f);
+		tfunc.addAlphaPegPoint(.298f, .05f);
 		
 		
 		tfunc.addAlphaPegPoint(.23f, 0f);
 		tfunc.addAlphaPegPoint(.256f, .05f);
 		
-		tfunc.addAlphaPegPoint(.3f, .05f);
-		tfunc.addAlphaPegPoint(.31f, 0f);
+		//tfunc.addAlphaPegPoint(.3f, .05f);  
+		//tfunc.addAlphaPegPoint(.31f, 0f);
+		tfunc.addAlphaPegPoint(.335f, .05f); //test
+		tfunc.addAlphaPegPoint(.336f, 0f);
 		
-		
-		tfunc.addAlphaPegPoint(.511f, .9f);
+		tfunc.addAlphaPegPoint(.55f, .9f);
 		tfunc.addAlphaPegPoint(.57f, 1f);
 		tfunc.addAlphaPegPoint(.8f, 0.0f);
 		
@@ -135,7 +147,7 @@ public class TransferFunctionFactory {
 		tfunc.addAlphaPegPoint(.099f,.05f );
 		tfunc.addAlphaPegPoint(.127f,0);
 		tfunc.addAlphaPegPoint(.279f,0);
-		tfunc.addAlphaPegPoint(.52f,.6f);
+		tfunc.addAlphaPegPoint(.52f,.3f);
 		tfunc.addAlphaPegPoint(.6f,0f);
 		
 		

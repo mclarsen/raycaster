@@ -52,7 +52,7 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	
 	//compute angle between the vector to the eye and reflected light dir
 	float cosPhi = dot (V,R);
-	 vec4 emission=vec4(.1,.1,.1,1);
+	 vec4 emission=vec4(.2,.2,.2,1);
 	//compute reflected color
 	phongColor=  emission+ .2 * matAmb + lightAmb*matAmb
 			 	+ lightDiff * matDiff * max( cosTheta, 0.0 )
@@ -67,7 +67,7 @@ float rand(vec2 co){
 }
 
 void main()                                                                         
-{   float step=.002;
+{   float step=.003;
 	vec3 dither= vec3(rand(varyingColor.xy),rand(varyingColor.zy),rand(varyingColor.xz));
 	//step+=rand(varyingColor.xy)/10000;
 	mat4 invProjMat= inverse(projMatrix);
@@ -133,10 +133,6 @@ void main()
 			break;
 		}
 		
-		//if(currentColor.a>=thresholds.y) {
-		//	//currentColor.a=.9;
-		//	break;
-		//}
 	  
 
 	}
