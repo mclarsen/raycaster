@@ -465,7 +465,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getHead2(), gl3);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getHead3(), gl3);
 		
 		//theVolume.nextTransferFunction();
 		
@@ -477,16 +477,18 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		//createTestVolume2(gl3);
 		//this.createEngineVolume(gl3);
 		
-		
-		
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"me.raw",512,512,14 , 16, false,true,this);
+		theVolume.setScale(1f, 1f, .05f);
+		theVolume.addTransferFuncton(TransferFunctionFactory.me1(), gl3);
+		theVolume.nextTransferFunction();
 		//engine
 		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false, this);
 		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
 		//theVolume.nextTransferFunction();
 		//Orange
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
-		theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
-		theVolume.nextTransferFunction();
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
+		//theVolume.nextTransferFunction();
 		
 		initLights(gl3);
 		

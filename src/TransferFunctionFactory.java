@@ -108,9 +108,9 @@ public class TransferFunctionFactory {
 		tfunc.addRGBPegPoint(0.334f, 234, 221, 161);
 		// 285-29 red
 		tfunc.addAlphaPegPoint(.284f, .050f);
-		tfunc.addAlphaPegPoint(.285f, .07f);
+		tfunc.addAlphaPegPoint(.285f, .05f);
 		
-		tfunc.addAlphaPegPoint(.297f, .07f);
+		tfunc.addAlphaPegPoint(.297f, .05f);
 		tfunc.addAlphaPegPoint(.298f, .05f);
 		
 		
@@ -125,6 +125,48 @@ public class TransferFunctionFactory {
 		tfunc.addAlphaPegPoint(.55f, .9f);
 		tfunc.addAlphaPegPoint(.57f, 1f);
 		tfunc.addAlphaPegPoint(.8f, 0.0f);
+		
+		//tfunc.addAlphaPegPoint(.24f, .1f);
+		//tfunc.addAlphaPegPoint(.313f, .0f);
+		//tfunc.addAlphaPegPoint(.321f, .3f);
+		//tfunc.addAlphaPegPoint(.99f, 1);
+
+		
+		return tfunc;
+		
+	}
+	
+	public static TransferFunction getHead3(){
+		TransferFunction tfunc= new TransferFunction(1000);
+		
+
+	
+		tfunc.addAlphaPegPoint(.5f, 0f);
+		
+		
+		tfunc.addRGBPegPoint(0.01f, 221, 200, 100);//234, 221,161
+
+		tfunc.addRGBPegPoint(0.334f, 234, 221, 161);
+		// 285-29 red\
+		tfunc.addAlphaPegPoint(.21f, 0f);
+		tfunc.addAlphaPegPoint(.22f, .04f);
+		tfunc.addAlphaPegPoint(.284f, .050f);
+		tfunc.addAlphaPegPoint(.285f, .05f);
+		
+		tfunc.addAlphaPegPoint(.297f, .05f);
+		tfunc.addAlphaPegPoint(.298f, .05f);
+		
+		
+
+		
+		//tfunc.addAlphaPegPoint(.3f, .05f);  
+		//tfunc.addAlphaPegPoint(.31f, 0f);
+		tfunc.addAlphaPegPoint(.355f, .04f); //test
+		tfunc.addAlphaPegPoint(.36f, 0f);
+		
+		//tfunc.addAlphaPegPoint(.55f, .9f);
+		//tfunc.addAlphaPegPoint(.57f, 1f);
+		//tfunc.addAlphaPegPoint(.8f, 0.0f);
 		
 		//tfunc.addAlphaPegPoint(.24f, .1f);
 		//tfunc.addAlphaPegPoint(.313f, .0f);
@@ -155,6 +197,18 @@ public class TransferFunctionFactory {
 		
 	}
 	
+	public static TransferFunction me1(){
+		TransferFunction tfunc= new TransferFunction(1000);
+		
+		tfunc.addAlphaPegPoint(.01f,.02f);
+		tfunc.addRGBPegPoint(.001f,255,102,0);
+		tfunc.addRGBPegPoint(.999f,255,0,0);
+		tfunc.addAlphaPegPoint(.99f,0.02f);
+		
+		
+		return tfunc;
+		
+	} 
 	/*public static TransferFunction getEngine2(){
 		TransferFunction tfunc= new TransferFunction(1000);
 		

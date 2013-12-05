@@ -68,6 +68,8 @@ float rand(vec2 co){
 
 void main()                                                                         
 {   float step=.003;
+	bool isoSurface=true;
+
 	vec3 dither= vec3(rand(varyingColor.xy),rand(varyingColor.zy),rand(varyingColor.xz));
 	//step+=rand(varyingColor.xy)/10000;
 	mat4 invProjMat= inverse(projMatrix);
@@ -108,20 +110,21 @@ void main()
 		sampleColor.r=color.r/1000;
 		sampleColor.g=color.g/1000;
 		sampleColor.b=color.b/1000;
+		
 		if(scalar>thresholds.x && scalar <thresholds.y) scalar=scalar;
 		else scalar=0;
 		
 		sampleColor.rgba=texture(transferFunction,scalar).rgba;
-		
-		if(sampleColor.a>.05){
+		sampleColor.a=1-pow((1-sampleColor.a),.002/.001);
+		if(sampleColor.a>=.01){
 		deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
 		deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
 		deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
 		vertexEyeSpace=invProjMat*vec4(currentPosition,1);
 	
 		lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz,(modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz );//(modelViewMatrix*vec4(lookUp.gba,0)).xyz    (normalMat*vec4(lookUp.gba,1)).xyz  lookUp.gba  (modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz
-		
-		sampleColor.a=1-pow((1-sampleColor.a),.002/.001);
+
+
 		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb*sampleColor.a);
 		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a);
 		currentColor.a+=((1-currentColor.a)*sampleColor.a);//   //make sure we don't take the full alpha
@@ -129,6 +132,7 @@ void main()
 		//advance then check for termination
 		currentPosition+=rayStep;
 		currentLength+=stepLength;
+		
 		if(currentLength>=rayLength ||currentColor.a>=.9){
 			break;
 		}
