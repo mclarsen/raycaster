@@ -13,7 +13,7 @@ import javax.media.opengl.GLAutoDrawable;
 
 
 public class BoundingBox extends Shape3D{
-	
+	private final float MAX=1f;
 	private float [] verts={1.0f,1.0f,1.0f,    -1.0f,1.0f,1.0f,    -1.0f,-1.0f,1.0f,       1.0f,1.0f,1.0f,    -1.0f,-1.0f,1.0f,     1.0f, -1.0f,1.0f,  // front face
 						    1.0f,1.0f,-1.0f,   -1.0f,1.0f,-1.0f,    -1.0f,1.0f,1.0f,        1.0f,1.0f,-1.0f,    -1.0f,1.0f,1.0f,      1.0f,1.0f,1.0f,  //top face
 						    1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,   -1.0f,1.0f,-1.0f,      1.0f,-1.0f,-1.0f,    -1.0f,1.0f,-1.0f,    1.0f,1.0f,-1.0f, // back face
@@ -31,12 +31,12 @@ public class BoundingBox extends Shape3D{
 	
 	
 	
-	private float [] colors={1.0f,1.0f,1.0f,1.0f,    0f,1.0f,1.0f,1.0f,    	0f,0f,1.0f,1.0f,       	1.0f,1.0f,1.0f,1.0f,    0f,0f,1.0f,1.0f,     	1.0f, 0f,1.0f,1.0f,  // front face
-						    1.0f,1.0f,0f,1.0f,   	0f,1.0f,0f,1.0f,    	0f,1.0f,1.0f,1.0f,      1.0f,1.0f,0f,1.0f,    	0f,1.0f,1.0f,1.0f,      1.0f,1.0f,1.0f,1.0f,  //top face
-						    1.0f,0f,0f,1.0f,  		0f,0f,0f,1.0f,   		0f,1.0f,0f,1.0f,     	1.0f,0f,0f,1.0f,    	0f,1.0f,0f,1.0f,    	1.0f,1.0f,0f,1.0f, // back face
-						    1.0f,0f,1.0f,1.0f,   	0f,0f,1.0f,1.0f,   		0f,0f,0f,1.0f,      	1.0f,0f,1.0f,1.0f,   	0f,0f,0f,1.0f,     		1.0f,0f,0f,1.0f,// bottom face
-						    1.0f,1.0f,0f,1.0f,   	1.0f,1.0f,1.0f,1.0f,    1.0f,0f,1.0f,1.0f,      1.0f,1.0f,0f,1.0f,    	1.0f,0f,1.0f,1.0f,      1.0f,0f,0f,1.0f,  //right face
-						    0f,1.0f,1.0f,1.0f,   	0f,1.0f,0f,1.0f,   		0f,0f,0f,1.0f,      	0f,1.0f,1.0f,1.0f,  	0f,0f,0f,1.0f,     		0f,0f,1.0f,1.0f};
+	private float [] colors={MAX,MAX,MAX,MAX,    0f,MAX,MAX,MAX,    	0f,0f,MAX,MAX,       	MAX,MAX,MAX,MAX,    0f,0f,MAX,MAX,     	MAX, 0f,MAX,MAX,  // front face
+						    MAX,MAX,0f,MAX,   	0f,MAX,0f,MAX,    	0f,MAX,MAX,MAX,      MAX,MAX,0f,MAX,    	0f,MAX,MAX,MAX,      MAX,MAX,MAX,MAX,  //top face
+						    MAX,0f,0f,MAX,  		0f,0f,0f,MAX,   		0f,MAX,0f,MAX,     	MAX,0f,0f,MAX,    	0f,MAX,0f,MAX,    	MAX,MAX,0f,MAX, // back face
+						    MAX,0f,MAX,MAX,   	0f,0f,MAX,MAX,   		0f,0f,0f,MAX,      	MAX,0f,MAX,MAX,   	0f,0f,0f,MAX,     		MAX,0f,0f,MAX,// bottom face
+						    MAX,MAX,0f,MAX,   	MAX,MAX,MAX,MAX,    MAX,0f,MAX,MAX,      MAX,MAX,0f,MAX,    	MAX,0f,MAX,MAX,      MAX,0f,0f,MAX,  //right face
+						    0f,MAX,MAX,MAX,   	0f,MAX,0f,MAX,   		0f,0f,0f,MAX,      	0f,MAX,MAX,MAX,  	0f,0f,0f,MAX,     		0f,0f,MAX,MAX};
 	private int[] vaoID= new int[1];// vertex array object ID
 
 	private float[] textCoords={1f,1f,        0f,1f,     0f,0f,    1f,1f,   0f,0f,  1f,0f,

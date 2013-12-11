@@ -1,8 +1,15 @@
 import graphicslib3D.GeometryTransformPipeline;
 import graphicslib3D.Matrix3D;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
@@ -48,7 +55,7 @@ public class VolumeRaycaster {
     private TransferFunction defaultTransferFunction;
     
     
-	public VolumeRaycaster(GLAutoDrawable arg0, int screenHeight, int screenWidth,String fname,int xSize,int ySize,int zSize, int bitSize, boolean bigEndian,boolean autoScale , OpenGLFrame frame)
+	public VolumeRaycaster(GLAutoDrawable arg0, int screenHeight, int screenWidth,String fname,int xSize,int ySize,int zSize, int bitSize, boolean bigEndian,boolean autoScale , OpenGLFrame frame, boolean asciiFile)
 	{
 		theFrame=frame;
 		xDim=xSize;
@@ -57,7 +64,7 @@ public class VolumeRaycaster {
 		this.bitSize=bitSize;
 		isBigEndian= bigEndian;
 		fileName=fname;
-		
+		this.autoScale=autoScale;
 		GL3 gl = (GL3) arg0.getGL();
 		
 		//compile and link the shader
@@ -120,7 +127,7 @@ public class VolumeRaycaster {
 			}
 			//unbind the framebuffer
 			gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
-			loadVolume(gl);
+			loadVolume(gl,asciiFile);
 				
 			defaultTransferFunction= new TransferFunction(1000);
 			float step=1/6.0f;
@@ -171,7 +178,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		volumeBox.rotate(0, 0,.1);
+		//volumeBox.rotate(0, 0,.1);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -235,6 +242,8 @@ public class VolumeRaycaster {
 	public void setLowerCutoff(float c){
 		if (c>=0&&c<=1) this.lowerCutoff=c;
 	}
+	public float getLowerCutoff(){return this.lowerCutoff;}
+	
 	public void setColor(float[] c){
 		this.color[0]=c[0];
 		this.color[1]=c[1];
@@ -244,29 +253,42 @@ public class VolumeRaycaster {
 	
 	public float[] getColor(){return color;}
 	
-	private void loadVolume(GL3 gl){
+	private void loadVolume(GL3 gl, boolean ascii){
 		int[] testDims={3,3,3};
 		System.out.println(getLogicalPointIndex(13,testDims)[0]+" "+getLogicalPointIndex(13,testDims)[1]+" "+getLogicalPointIndex(13,testDims)[2]);
 		System.out.println(this.getPointIndex(1, 1, 1, testDims));
-		float scalars[] = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
+		float scalars[];
+		if(!ascii) scalars = RawReader.ReadRaw(bitSize, xDim, yDim, zDim, fileName,isBigEndian);
+		else scalars= RawReader.readAscii(xDim, yDim, zDim, fileName);
 		//{0,0,0,  0,1f,0,  0,0,0,  0,2f,0, 2f,1.5f,1f, 0,3f,0, 0,0,0, 0,2f,0, 0,0,0};
 		float[] data= new float[scalars.length*4]; //storing normal vectors.
 		int[] dims={xDim,yDim,zDim};
 		//int [] dims= {3,3,3};
+		ArrayList<String> textData= new ArrayList<String>();
 		for(int i=0;i<scalars.length;i++){
+			if(scalars[i]>1000) scalars[i]=988f;
 			if (scalars[i]>scalarMax) scalarMax=scalars[i];
 			if(scalars[i]<scalarMin) scalarMin=scalars[i];
+			//textData.add(""+scalars[i]);
 		}
+
 		//scale the data to eliminate un-used values
 		if(autoScale){
-			
+			System.out.println("Scaling");
 			for(int i=0;i<scalars.length;i++){
 				scalars[i]=scalars[i]/scalarMax;
+				textData.add(""+scalars[i]);
+				//if(scalars[i]!=.06f) System.out.println(scalars[i]);
 			}
 				//if (data[i]>scalarMax) scalarMax=data[i];
 				//if(data[i]<scalarMin) scalarMin=data[i];
 		}
-		
+		try {
+			this.writeLargerTextFile("fuel.txt", textData);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		for(int i=0;i<scalars.length;i++){
 			data[i*4]=scalars[i];
 			int [] point=getLogicalPointIndex(i, dims);
@@ -349,5 +371,15 @@ public class VolumeRaycaster {
 		xyz[2]=indx/(dims[0]*dims[1]);
 		return xyz;
 	}
+	
+	private  void writeLargerTextFile(String aFileName, List<String> obs) throws IOException {
+	    Path path = Paths.get(aFileName);
+	    try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.ISO_8859_1)){
+	      for(int i=0; i<obs.size();i++){
+	        writer.write(obs.get(i));
+	        writer.newLine();
+	      }
+	    }
+	  }
 	
 }

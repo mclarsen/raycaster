@@ -111,7 +111,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     //lights
     private PositionalLight light1= new PositionalLight();
 	float[] light1_specular= {.8f,.8f,.8f,1};
-	float[] light1_diffuse= {1f,1f,1f,1};
+	float[] light1_diffuse= {.5f,.5f,.5f,1};
 	float[] light1_ambient={0,0,0,1};
 	private boolean light1On=true;
     private LightAttributesLocs light1Locs;
@@ -131,6 +131,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
     boolean onE=false;
     boolean onZ=false;
     boolean onC=false;
+    boolean cutOff=false;
     
     // Shader Programs
     private ShaderProgram identityShader;
@@ -160,7 +161,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 
 		this.setLayout(new BorderLayout());                    //JFrame Setup
 		setTitle("RayCast Demo");
-		setSize(800,600);
+		setSize(1024,768);
 		setLocation(200,200);
 		
 		int input_MapName = JComponent.WHEN_IN_FOCUSED_WINDOW; // Key Binding setup
@@ -349,6 +350,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		if(onE) myCamera.moveUp(-moveSpeed);
 		if(onZ) myCamera.roll(-panSpeed);
 		if(onC) myCamera.roll(panSpeed);
+		if(cutOff) theVolume.setLowerCutoff(theVolume.getLowerCutoff()+.001f);
 		myCamera.tick(); 													//calculate movement based on momentum
 		
 		GL3 gl=(GL3) arg0.getGL();
@@ -464,8 +466,8 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getHead3(), gl3);
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this, false);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getHead4(), gl3);
 		
 		//theVolume.nextTransferFunction();
 		
@@ -477,19 +479,30 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		//createTestVolume2(gl3);
 		//this.createEngineVolume(gl3);
 		
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"me.raw",512,512,14 , 16, false,true,this);
-		theVolume.setScale(1f, 1f, .05f);
-		theVolume.addTransferFuncton(TransferFunctionFactory.me1(), gl3);
-		theVolume.nextTransferFunction();
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"me.raw",512,512,14 , 16, false,true,this);
+		//theVolume.setScale(1f, 1f, .05f);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.me1(), gl3);
+		//theVolume.nextTransferFunction();
 		//engine
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,false, this);
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,true, this,false);
 		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
 		//theVolume.nextTransferFunction();
 		//Orange
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getOrange1(), gl3);
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this,false);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getOrange2(), gl3);
 		//theVolume.nextTransferFunction();
 		
+		
+		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Enzo_VTK.vtk",256,256,256 , 32, false,true, this,true);
+		//theVolume.addTransferFuncton(TransferFunctionFactory.getEnzo2(), gl3);
+		//theVolume.nextTransferFunction();
+		//theVolume.setScale(1f, 1f, .5f);
+		//fuel
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"fuel.raw",64,64,64 , 8, false,true, this,false);
+		theVolume.addTransferFuncton(TransferFunctionFactory.getFuel1(), gl3);
+		theVolume.nextTransferFunction();
+		
+		light1.setPosition(new Point3D(100,0,0));
 		initLights(gl3);
 		
 		//TransferFunction tester= new TransferFunction(10);
@@ -739,6 +752,21 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
             public void actionPerformed(ActionEvent e) {
             	thisJFrame.dispose();
             	System.exit(1);
+            }});
+		
+		
+		KeyStroke y_Key = KeyStroke.getKeyStroke("Y");
+		input_Map.put(y_Key, "Y");
+		action_Map.put("Y", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+            	cutOff=true;
+            }});
+		
+		KeyStroke y_KeyR = KeyStroke.getKeyStroke("released Y");
+		input_Map.put(y_KeyR, "rY");
+		action_Map.put("rY", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+            	cutOff=false;
             }});
 		
 	}// end keybinding buider

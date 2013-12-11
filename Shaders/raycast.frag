@@ -27,6 +27,11 @@ in vec4 varyingColor;//this is where the ray penetrates the volume
 in vec4 varyingVert;   
 out vec4 fragColor;                                                                  
 
+float cerp(float p0, float p1, float p2, float p3, float x){
+	return p1+0.5*x*(p2-p0 +x*(2.0*p0-5.0*p1+4.0*p2-p3+x*(3.0*(p1-p2)+p3-p0)));
+}
+
+
 //all these params need eye space.
 vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	vec4 phongColor= vec4(0,0,0,0);
@@ -34,10 +39,10 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	vec4 lightDiff= light.diffuse;
 	vec4 lightSpec= light.specular;
 	
-	vec4 matAmb=vec4(.3,.3,.3,1);
-	vec4 matDiff=vec4(.5,.5,.5,1);
-	vec4 matSpec=vec4(.3,.3,.3,1);
-	float matShininess=.2;
+	vec4 matAmb=vec4(.3,.3,.3,.1);
+	vec4 matDiff=vec4(.1,.1,.1,.1);
+	vec4 matSpec=vec4(.3,.3,.3,.1);
+	float matShininess=.1;
 	
 	//compute normailized lights, normal, and eye dir vecs
 	vec3 L = normalize(lightDir);
@@ -52,9 +57,10 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	
 	//compute angle between the vector to the eye and reflected light dir
 	float cosPhi = dot (V,R);
-	 vec4 emission=vec4(.2,.2,.2,1);
+	 vec4 emission=vec4(.4,.4,.4,1);//emission+
+	 //emission= vec4(0,0,0,0);
 	//compute reflected color
-	phongColor=  emission+ .2 * matAmb + lightAmb*matAmb
+	phongColor= emission+  .2 * matAmb + lightAmb*matAmb
 			 	+ lightDiff * matDiff * max( cosTheta, 0.0 )
 			 	+ lightSpec*matSpec * pow ( max(cosPhi, 0.0), matShininess); 
 	//phongColor=lightDiff * matDiff * max( cosTheta, 0.0 );
@@ -67,7 +73,7 @@ float rand(vec2 co){
 }
 
 void main()                                                                         
-{   float step=.003;
+{   float step=.001;
 	bool isoSurface=true;
 
 	vec3 dither= vec3(rand(varyingColor.xy),rand(varyingColor.zy),rand(varyingColor.xz));
@@ -120,6 +126,11 @@ void main()
 		deltaX=(textureOffset(volume,currentPosition.xyz, off.zyy).r-textureOffset(volume,currentPosition.xyz, off.xyy).r)/2.0;
 		deltaY=(textureOffset(volume,currentPosition.xyz, off.yzy).r-textureOffset(volume,currentPosition.xyz, off.yxy).r)/2.0;
 		deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
+		//float gradMagnitude=sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
+		//if(gradMagnitude>.195){
+		//	sampleColor.rgba=vec4(1,1,1,.2);
+		//}
+		
 		vertexEyeSpace=invProjMat*vec4(currentPosition,1);
 	
 		lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz,(modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz );//(modelViewMatrix*vec4(lookUp.gba,0)).xyz    (normalMat*vec4(lookUp.gba,1)).xyz  lookUp.gba  (modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz
