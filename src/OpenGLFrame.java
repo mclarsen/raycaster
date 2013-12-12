@@ -350,7 +350,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		if(onE) myCamera.moveUp(-moveSpeed);
 		if(onZ) myCamera.roll(-panSpeed);
 		if(onC) myCamera.roll(panSpeed);
-		if(cutOff) theVolume.setLowerCutoff(theVolume.getLowerCutoff()+.001f);
+		if(cutOff) theVolume.setLowerCutoff(theVolume.getLowerCutoff()+.01f);
 		myCamera.tick(); 													//calculate movement based on momentum
 		
 		GL3 gl=(GL3) arg0.getGL();
@@ -420,7 +420,7 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 	public void init(GLAutoDrawable arg0) {
 		GL3 gl3 = (GL3) arg0.getGL();
 		
-		
+		gl3.glClearColor(1f, 1f, 1f, 1f);
 		/*
 		 *  geometry pipeline code setup
 		 */
@@ -466,41 +466,41 @@ public class OpenGLFrame extends JFrame implements GLEventListener, ActionListen
 		
 		
 		
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this, false);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getHead4(), gl3);
-		
-		//theVolume.nextTransferFunction();
-		
-		//theVolume.rotate(0, 0, 90);
-		//theVolume.rotate(0, 90, 0);
+//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"head.raw",256,256,113 , 16, true,true,this, false);
+//		theVolume.addTransferFuncton(TransferFunctionFactory.getHead2(), gl3);
+//		
+//		theVolume.nextTransferFunction();
+//		
+//		theVolume.rotate(0, 0, 90);
+//		theVolume.rotate(0, 90, 0);
 		//theVolume.setScale(1f, 1f, .61f);
 		
 		//createTest Volume
 		//createTestVolume2(gl3);
 		//this.createEngineVolume(gl3);
 		
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"me.raw",512,512,14 , 16, false,true,this);
-		//theVolume.setScale(1f, 1f, .05f);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.me1(), gl3);
-		//theVolume.nextTransferFunction();
+//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"me.raw",512,512,14 , 16, false,true,this,false);
+//		theVolume.setScale(1f, 1f, .05f);
+//		theVolume.addTransferFuncton(TransferFunctionFactory.me1(), gl3);
+//		theVolume.nextTransferFunction();
 		//engine
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,true, this,false);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
-		//theVolume.nextTransferFunction();
+		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Engine.raw",256,256,256 , 8, false,true, this,false);
+		theVolume.addTransferFuncton(TransferFunctionFactory.getEngine1(), gl3);
+		theVolume.nextTransferFunction();
 		//Orange
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this,false);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getOrange2(), gl3);
+//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"orange.raw",256,256,64 , 8, false,true, this,false);
+//		theVolume.addTransferFuncton(TransferFunctionFactory.getOrange2(), gl3);
 		//theVolume.nextTransferFunction();
-		
-		
-		//theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Enzo_VTK.vtk",256,256,256 , 32, false,true, this,true);
-		//theVolume.addTransferFuncton(TransferFunctionFactory.getEnzo2(), gl3);
-		//theVolume.nextTransferFunction();
+//		
+//		
+//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"Enzo_VTK.vtk",256,256,256 , 32, false,true, this,true);
+//		theVolume.addTransferFuncton(TransferFunctionFactory.getEnzo2(), gl3);
+//		theVolume.nextTransferFunction();
 		//theVolume.setScale(1f, 1f, .5f);
 		//fuel
-		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"fuel.raw",64,64,64 , 8, false,true, this,false);
-		theVolume.addTransferFuncton(TransferFunctionFactory.getFuel1(), gl3);
-		theVolume.nextTransferFunction();
+//		theVolume= new VolumeRaycaster(arg0,myCanvas.getHeight(),myCanvas.getWidth(),"fuel.raw",64,64,64 , 8, false,true, this,false);
+//		theVolume.addTransferFuncton(TransferFunctionFactory.getFuel1(), gl3);
+//		theVolume.nextTransferFunction();
 		
 		light1.setPosition(new Point3D(100,0,0));
 		initLights(gl3);

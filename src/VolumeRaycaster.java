@@ -178,7 +178,7 @@ public class VolumeRaycaster {
 
 		gl.glUseProgram(IdentityLocs.getProgID());
 		
-		//volumeBox.rotate(0, 0,.1);
+		//volumeBox.rotate(0, .0,.1);
 		
 		//render to the buffer
 		gl.glBindFramebuffer (GL3.GL_FRAMEBUFFER, backFaceFrameBuff[0]);
@@ -277,18 +277,18 @@ public class VolumeRaycaster {
 			System.out.println("Scaling");
 			for(int i=0;i<scalars.length;i++){
 				scalars[i]=scalars[i]/scalarMax;
-				textData.add(""+scalars[i]);
+				//textData.add(""+scalars[i]);
 				//if(scalars[i]!=.06f) System.out.println(scalars[i]);
 			}
 				//if (data[i]>scalarMax) scalarMax=data[i];
 				//if(data[i]<scalarMin) scalarMin=data[i];
 		}
-		try {
-			this.writeLargerTextFile("fuel.txt", textData);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		try {
+//			this.writeLargerTextFile("fuel.txt", textData);
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 		for(int i=0;i<scalars.length;i++){
 			data[i*4]=scalars[i];
 			int [] point=getLogicalPointIndex(i, dims);

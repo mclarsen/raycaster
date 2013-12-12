@@ -19,7 +19,7 @@ public class Camera {
 	// constructor
 	public Camera(){
 		
-		loc= new Point3D(0,0,10); // camera set initial position
+		loc= new Point3D(0,0,3); // camera set initial position
 		u=new Vector3D(-1,0,0); //x
 		v= new Vector3D(0,1,0);//y
 		n= new Vector3D(0,0,-1);//z

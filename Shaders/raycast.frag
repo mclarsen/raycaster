@@ -39,10 +39,14 @@ vec4 getPhongColor(in vec3 lightDir,in vec3 vertex,in vec3 normal){
 	vec4 lightDiff= light.diffuse;
 	vec4 lightSpec= light.specular;
 	
-	vec4 matAmb=vec4(.3,.3,.3,.1);
-	vec4 matDiff=vec4(.1,.1,.1,.1);
-	vec4 matSpec=vec4(.3,.3,.3,.1);
-	float matShininess=.1;
+	vec4 matAmb=vec4(.4,.4,.4,.4);
+	vec4 matDiff=vec4(.4,.4,.4,.4);
+	vec4 matSpec=vec4(.3,.3,.3,.4);
+	//perl
+	//vec4 matAmb=vec4(.25,.20725,.20724,.992);
+	//vec4 matDiff=vec4(1,.829,.829,.922);
+	//vec4 matSpec=vec4(.296,.296,.296,.922);
+	float matShininess=11.264;
 	
 	//compute normailized lights, normal, and eye dir vecs
 	vec3 L = normalize(lightDir);
@@ -128,7 +132,7 @@ void main()
 		deltaZ=(textureOffset(volume,currentPosition.xyz, off.yyz).r-textureOffset(volume,currentPosition.xyz, off.yyx).r)/2.0;
 		//float gradMagnitude=sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
 		//if(gradMagnitude>.195){
-		//	sampleColor.rgba=vec4(1,1,1,.2);
+		//	sampleColor.rgba=vec4(0,1,1,.2);
 		//}
 		
 		vertexEyeSpace=invProjMat*vec4(currentPosition,1);
@@ -136,7 +140,7 @@ void main()
 		lightColor=getPhongColor(light.position.xyz-vertexEyeSpace.xyz,vertexEyeSpace.xyz,(modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz );//(modelViewMatrix*vec4(lookUp.gba,0)).xyz    (normalMat*vec4(lookUp.gba,1)).xyz  lookUp.gba  (modelViewMatrix*vec4(deltaX,deltaY,deltaZ,0)).xyz
 
 
-		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*lightColor.rgb*sampleColor.a);
+		currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a*lightColor.rgb);//
 		//currentColor.rgb+=((1-currentColor.a)*sampleColor.rgb*sampleColor.a);
 		currentColor.a+=((1-currentColor.a)*sampleColor.a);//   //make sure we don't take the full alpha
 		}
